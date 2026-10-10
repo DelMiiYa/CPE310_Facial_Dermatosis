@@ -1,0 +1,8 @@
+https://www.kaggle.com/datasets/jhirshaikh/skin-assessment-dataset
+https://www.kaggle.com/datasets/trainingdatapro/skin-defects-acne-redness-and-bags-under-the-eyes
+https://www.kaggle.com/datasets/osmankagankurnaz/facial-skin-diseases-dataset
+https://www.kaggle.com/datasets/osmankagankurnaz/acne-dataset-in-yolov8-format
+https://www.kaggle.com/datasets/muhammadabdulsami/massive-skin-disease-balanced-dataset
+https://www.kaggle.com/datasets/tapakah68/skin-problems-34-on-the-iga-scale
+https://github.com/google-research-datasets/scin
+https://universe.roboflow.com/facial-skin-dataset/face-skin-diseases

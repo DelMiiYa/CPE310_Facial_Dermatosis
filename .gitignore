@@ -1,0 +1,24 @@
+# Data (raw downloads, processed images, manifests) - never version-controlled
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Training outputs
+runs/
+checkpoints/
+*.pt
+*.pth
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
