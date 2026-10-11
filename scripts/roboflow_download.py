@@ -117,5 +117,50 @@ def list_face_skin_versions():
         logging.info(f"Version {v.version}: images={getattr(v, 'images', '?')}, preprocessing={getattr(v, 'preprocessing', {})}, augmentation={getattr(v, 'augmentation', {})}")
     return vs
 
+def download_face_skin(output_dir: Path = None):
+    """Download Task 1b dataset (d3l-m11/face-skin-diseases-bbveb)."""
+    if output_dir is None:
+        output_dir = PROJECT_ROOT / "data" / "raw" / "roboflow-face-skin"
+
+    if output_dir.exists() and any(output_dir.iterdir()):
+        logging.info(f"Directory {output_dir} already exists and is not empty. Skipping download.")
+        return output_dir
+
+    rf = get_roboflow_client()
+    ws = rf.workspace("d3l-m11")
+    project = ws.project("face-skin-diseases-bbveb")
+    versions = project.versions()
+
+    if not versions:
+        logging.info("No versions found. Attempting to generate unaugmented version via API...")
+        try:
+            v_num = project.generate_version({"augmentation": {}, "preprocessing": {}})
+            logging.info(f"Generated version {v_num}.")
+            versions = project.versions()
+        except Exception as e:
+            logging.error(f"Failed to generate version via API: {e}")
+            logging.info("Please generate a version in Roboflow web UI with no preprocessing and no augmentation.")
+            return None
+
+    unaugmented_versions = [v for v in versions if not getattr(v, "augmentation", {})]
+    if unaugmented_versions:
+        selected_version = unaugmented_versions[-1]
+        logging.info(f"Selected unaugmented version: {selected_version.version}")
+    else:
+        selected_version = versions[-1]
+        logging.warning(f"All versions have augmentations! Selected highest version {selected_version.version}.")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    logging.info(f"Downloading version {selected_version.version} to {output_dir}...")
+    dataset = selected_version.download("folder", location=str(output_dir), overwrite=True)
+    logging.info(f"Download complete: {dataset.location}")
+
+    count_summary(output_dir)
+    return output_dir
+
 if __name__ == "__main__":
-    download_rosacea()
+    if len(sys.argv) > 1 and sys.argv[1] == "face_skin":
+        download_face_skin()
+    else:
+        download_rosacea()
+
