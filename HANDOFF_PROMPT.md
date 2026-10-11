@@ -115,11 +115,13 @@ Decided with the user so far:
 - `skin_assessment` Normal (1,240) and Acne (1,185), `yolo_acne` (927): show galleries of face-detected images, then ask the user to keep/reject.
 - **Normal source (biggest gap, no source decided).** Options: Normal faces from `skin_assessment` after the face filter; CelebA (as in Paper 5; celebrity photos, not phone selfies); or photos the user collects with consent. Ask the user.
 - Dermatitis is thin (99 training images, plus SCIN is test-only), so use class-weighted loss and tell the user about it.
-### Task 3: Step 5, MediaPipe face detection and cropping (NEXT; a subagent was started on it)
-- `src/detection.py` and `scripts/run_face_detection.py`. Run MediaPipe over the manifest (including SCIN) and fill `face_detected`.
-- For images with no face, the user (or a rule agreed with the user) decides: valid facial close-up vs. non-face body part (`rejected`).
-- Implement patch extraction: forehead / nose / L cheek / R cheek / chin for selfies, 224×224 tiles for close-ups.
-- Commit.
+### Task 3: Step 5, MediaPipe face detection and cropping ✅ DONE (commit `0583a56`)
+MediaPipe Tasks Vision `blaze_face_short_range.tflite` + `face_landmarker.task` integrated in `src/detection.py` and run via `scripts/run_face_detection.py`.
+- 8,196 images evaluated, zero failures.
+- Manifest schema updated with `face_detected`, `face_conf`, `face_area_frac`.
+- 2,827 face-detected images (34.5%); 5,369 close-ups / non-face images (65.5%).
+- 24 sample patches verified in `data/reports/galleries/step5_patch_samples.html`.
+- Full detection summary report saved at `data/reports/step5_face_detection_summary.md`.
 
 ### Task 4: Step 6, near-duplicate removal
 - `scripts/deduplicate.py` with `imagehash.phash`, **Hamming distance ≤ 6–8**, across **all sources**, **before splitting**. Store `phash` in the manifest.
@@ -146,4 +148,4 @@ EfficientNet-B0, a possible ensemble, **Grad-CAM** on all models (check the mode
 
 ---
 
-**Current status:** Task 1, 1b done. Task 3 (MediaPipe face detection) was started by a subagent; check `git log` and the manifest for whether it finished. Only the *final* Task 2 decisions (`skin_assessment` Normal/Acne, `yolo_acne`, Normal source) remain open and are made **after** Task 3, on faces only. **Start by briefly confirming you've read this, check the repo state, then propose the next unfinished task and wait for the user's approval.**
+**Current status:** Tasks 1, 1b, and 3 are completed. Next is finalizing the Task 2 dataset decisions (filtering out DermNet/non-face images) and proceeding to Task 4 (pHash deduplication and subject grouping).
