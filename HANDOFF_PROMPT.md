@@ -70,11 +70,12 @@ scripts/scin_fetch_metadata.py, scin_explore.py, scin_download_filtered.py, gene
 | train_pool | yolo_acne | Acne | 927 | **empty** |
 | train_pool | skin_defects | Acne | 30 | person folder |
 | train_pool | roboflow_rosacea | Rosacea (`orig_label=redness`) | 1,088 | **empty**, and **augmented copies, see Known issue 8** |
+| train_pool | roboflow_face_skin | Acne 100 / Dermatitis 99 / Rosacea 100 | 299 | **empty**; clean (all distinct originals); user approved |
 | train_pool | skin_assessment | Acne 1,185 / Dermatitis 1,192 / Normal 1,240 / Rosacea 1,211 | 4,828 | **empty** |
 
-`review_status` is `pending` for all training rows and `accepted` for SCIN.
+`review_status` is `pending` for all training rows and `accepted` for SCIN. **Total manifest rows: 8,196** (all files exist; counts above sum to 8,196).
 
-**Roboflow:** the Rosacea download is done (Task 1). The face-skin-diseases fork has **not** been downloaded (`data/raw/roboflow-face-skin/` does not exist). That is Task 1b, your first job.
+**Roboflow:** both downloads are done (Task 1 and Task 1b, commit `970fa5a`). Do not redo them.
 
 ---
 
@@ -102,17 +103,19 @@ scripts/scin_fetch_metadata.py, scin_explore.py, scin_download_filtered.py, gene
 Done: `scripts/roboflow_download.py` (key read from `.env`, never printed) and `src/sources/roboflow_rosacea.py`. The fork `d3l-m11/rosacea-n6xhv-jnjno-rruul` was exported as version 1 (COCO) to `data/raw/roboflow-rosacea/` (1,116 images; 1,088 with a `redness` box registered as `label=Rosacea`, `orig_label=redness`). The user said the gallery sample "looks good".
 **Do not redo it. Caveats are in Known issues 8 and 9** (the set is full of augmented copies, and the label is only a "redness" box). If the user wants real originals, `skin-face-ixq7s/rosacea-n6xhv-jnjno` (the source project, not the fork) can be checked for an unaugmented version.
 
-### Task 1b: Download the face-skin-diseases fork (REQUIRED, NOT YET DONE; do this next)
-The user forked `facial-skin-dataset/face-skin-diseases` into **`d3l-m11/face-skin-diseases-bbveb`** (498 raw images: about 100 rosacea, 99 "eksim"/eczema, 100 acne, plus herpes and panu, which are out of scope). It may have no generated version yet. `scripts/roboflow_download.py` already has a `list_face_skin_versions()` helper.
-1. List versions. If **no version exists**, either create one via the Roboflow API with no preprocessing and no augmentation, or ask the user to click Generate in the web UI with both off, and wait.
-2. **Check for augmentation after downloading** (Known issue 8): look for `.rf.` stems with repeated originals. Report the number of unique originals vs. total files.
-3. Download to `data/raw/roboflow-face-skin/`, then register with `src/sources/roboflow_face_skin.py`. Map `rosacea` → `Rosacea`, `eksim` → `Dermatitis`, `acne` → `Acne`, keeping the original class name in `orig_label`; skip `herpes` and `panu`. Set `source=roboflow_face_skin`, `role=train_pool`, `review_status=pending`.
-4. Generate a gallery and **⏸ STOP** for review. Commit.
+### Task 1b: face-skin-diseases fork ✅ DONE (commit `970fa5a`), user reviewed galleries: "looks good"
+`d3l-m11/face-skin-diseases-bbveb` Version 1 (generated via API, no preprocessing/augmentation) → `data/raw/roboflow-face-skin/`. All 498 files are distinct originals (no `.rf.` duplicates, no train/test overlap). Registered 299 images as `source=roboflow_face_skin`, `role=train_pool`: Acne 100 (`acne`), Dermatitis 99 (`eksim`), Rosacea 100 (`rosacea`). Skipped `herpes` (100) and `panu` (99). Loader: `src/sources/roboflow_face_skin.py`. Manifest is now 8,196 rows. Do not redo.
 
-### Task 2: Review verdicts and source decisions (⏸ STOP)
-Show the user a summary table per source × class and ask for decisions on `skin_assessment` Normal/Acne, `yolo_acne`, and each Roboflow set (see Section 5). Record the results in `review_status` (`accepted`/`rejected`). Keep rejected images in the manifest; don't delete files.
+### Task 2: Review verdicts and source decisions (⏸ STOP), PARTLY DECIDED
+Decided with the user so far:
+- Roboflow face-skin set: **accepted** as good phone-style data (record `review_status=accepted` for those 299 rows if not yet set).
+- Recommended and to be confirmed: **reject `skin_assessment` Rosacea (1,211) and Dermatitis (1,192)** (repackaged DermNet / non-face). Record `rejected`; keep files.
 
-### Task 3: Step 5, MediaPipe face detection and cropping
+**Deferred until after Task 3 (face detection), so the user only judges real faces:**
+- `skin_assessment` Normal (1,240) and Acne (1,185), `yolo_acne` (927): show galleries of face-detected images, then ask the user to keep/reject.
+- **Normal source (biggest gap, no source decided).** Options: Normal faces from `skin_assessment` after the face filter; CelebA (as in Paper 5; celebrity photos, not phone selfies); or photos the user collects with consent. Ask the user.
+- Dermatitis is thin (99 training images, plus SCIN is test-only), so use class-weighted loss and tell the user about it.
+### Task 3: Step 5, MediaPipe face detection and cropping (NEXT; a subagent was started on it)
 - `src/detection.py` and `scripts/run_face_detection.py`. Run MediaPipe over the manifest (including SCIN) and fill `face_detected`.
 - For images with no face, the user (or a rule agreed with the user) decides: valid facial close-up vs. non-face body part (`rejected`).
 - Implement patch extraction: forehead / nose / L cheek / R cheek / chin for selfies, 224×224 tiles for close-ups.
@@ -143,4 +146,4 @@ EfficientNet-B0, a possible ensemble, **Grad-CAM** on all models (check the mode
 
 ---
 
-**Start by briefly confirming you've read this, then propose Task 1b (the face-skin-diseases fork download) and wait for the user's approval.**
+**Current status:** Task 1, 1b done. Task 3 (MediaPipe face detection) was started by a subagent; check `git log` and the manifest for whether it finished. Only the *final* Task 2 decisions (`skin_assessment` Normal/Acne, `yolo_acne`, Normal source) remain open and are made **after** Task 3, on faces only. **Start by briefly confirming you've read this, check the repo state, then propose the next unfinished task and wait for the user's approval.**
