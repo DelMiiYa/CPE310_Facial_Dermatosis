@@ -1,111 +1,108 @@
 # Handoff Prompt: Facial Dermatosis Classification (CPE310)
 
-*Paste this whole file into the next AI assistant. It's self-contained.*
+*Paste this entire file into the next AI assistant. It is completely self-contained.*
 
 ---
 
-## Your role
+## 1. Your Role & Working Rules
 
-You are an expert ML engineer continuing an **existing** end-to-end PyTorch computer-vision project. A previous assistant did the analysis and setup below. **Do not redo it, and do not reverse decisions marked as approved** unless the user asks.
+You are an expert ML engineer continuing an **existing** end-to-end PyTorch computer-vision project. Previous assistants completed project setup, SCIN external test set ingestion, local dataset inventory, visual gallery generation, and manual review. **Do not redo completed steps, and do not reverse approved decisions.**
 
 **Working rules (strict):**
 1. Work step by step. **Propose each step and wait for the user's approval before running it.** Never write the whole codebase at once.
-2. Never delete or modify anything in `data/raw/`. Never use DermNet or clinical-only imagery for training.
-3. Commit to the local git repo after each completed step (`data/` is git-ignored).
-4. Stop at every **⏸ STOP** point below and let the user review.
-5. Read `agent_guidelines.md` and `project_prompt.md` in the project root. They contain hard rules (domain gap, manual review, pHash dedup before splitting, 70/15/15 stratified split, Macro-F1, ResNet-50 baseline first, 3 seeds, Grad-CAM).
+2. **Never delete or modify anything in `data/raw/`.** Never use DermNet or clinical-only imagery for training.
+3. Commit to the local git repo after each completed step (`data/` and `.env` are git-ignored).
+4. Stop at every **⏸ STOP** point and let the user review.
+5. Read `agent_guidelines.md` and `project_prompt.md` in the project root. They contain hard rules:
+   - Domain gap avoidance (selfies/smartphones only for training)
+   - Deduplication via pHash Hamming distance $\le 6\text{--}8$ before splitting
+   - 70/15/15 stratified split grouped by `subject_id`
+   - Evaluation on Macro-F1
+   - ResNet-50 baseline first
+   - 3 random seeds & Grad-CAM verification.
 
 ---
 
-## Project context
+## 2. Project Context & Hardware
 
-- **Goal:** a multi-class classifier for facial skin conditions from **smartphone photos**. It must accept both **full-face selfies and close-ups**.
+- **Goal:** Multi-class classifier for facial skin conditions from **smartphone photos** (accepting full-face selfies and close-ups).
+- **Target Classes:** `Acne`, `Rosacea`, `Dermatitis` (atopic + contact merged), `Normal`.
 - **Project root:** `E:\CPE310FacialDermatorsisProject` (Windows, PowerShell, Python 3.13).
-- **Hardware:** NVIDIA RTX 3050, **4 GB VRAM**. Use mixed precision (`torch.amp.autocast`) and batch size 16–32. DataLoaders need `pin_memory=True`, `persistent_workers=True` and `num_workers=4`. Install PyTorch with the explicit CUDA index URL and verify `torch.cuda.is_available()`.
-- **Literature survey:** `Literature_and_Papers/Literature Survey.pdf` (written in Thai). Key takeaways:
-  - The main gap is that most prior work is binary; the hard real-world task is telling **acne vs. rosacea** apart (Papers 1, 2, 5).
-  - Add atopic/contact dermatitis (Papers 3, 4).
-  - Backbone: **EfficientNet-B0 / ResNet-50** with transfer learning.
-  - Evaluate across **Fitzpatrick skin types**.
-  - Compare a single model vs. an **ensemble** (Paper 2, FACES).
-  - **Patch-based** input beats whole-face input (Paper 5: forehead/nose/cheek crops). Paper 3 segments the lesion before classifying.
-- **Lesson from v1 (critical):** a model trained on DermNet clinical images got 95% accuracy but failed completely on real selfies (domain shift). Training data must look like smartphone photos.
+- **Hardware:** NVIDIA RTX 3050 Laptop GPU, **4 GB VRAM**. Verified CUDA working (`torch 2.6.0+cu124`).
+- **Low-VRAM requirements:** Mixed precision (`torch.amp.autocast`), batch size 16–32, DataLoaders with `pin_memory=True`, `persistent_workers=True`, `num_workers=4`.
+- **Architecture decision:** Pretrained face detector (MediaPipe) + single patch classifier:
+  - Face detected (selfie): Crop skin regions (forehead, nose, left cheek, right cheek, chin) and classify patches.
+  - No face detected (close-up): Tile image into patches.
+  - Aggregate patch scores into overall diagnosis + Grad-CAM heatmap.
 
 ---
 
-## ✅ Approved decisions
+## 3. Approved Decisions & Lessons Learned
 
-1. **Classes:** `Acne`, `Rosacea`, `Dermatitis` (atopic eczema + contact dermatitis merged), `Normal`. Seborrheic and perioral dermatitis are excluded (too few examples). The merge should be justified in the final report.
-2. **SCIN is the external test set only. It is never used for training, validation or tuning.**
-3. **Architecture:** one patch classifier plus a pretrained face detector (MediaPipe) that decides how to crop the input:
-   - Face detected (selfie): crop skin regions (forehead, nose, left/right cheek, chin) and classify each patch.
-   - No face (close-up): tile the image into patches and classify each.
-   - Aggregate the patch scores into one diagnosis, and produce a Grad-CAM heatmap.
-   - Rationale: data is scarce, so two separate models would split it; patches from both input types look alike.
-4. **Pipeline design:** a single `data/manifest/manifest.csv` is the source of truth. Images stay where they are and manifest rows point to them. Every later step (face filter, dedup, review, split) reads and updates the manifest instead of copying folders.
-5. Old files `download_data.py`, `filter_and_dedup.py` and `data/processed/` are **legacy and must not be used**. The old filter script pulled in DermNet folders, exact-match pHash missed augmented copies, it skipped the selfie datasets because of their folder layout, and it threw away which source each image came from.
+1. **SCIN is strictly the external test set:** Never used for training, validation, or tuning. 339 facial images downloaded to `data/raw/scin/dataset/images/`.
+2. **The Domain Gap Lesson (CRITICAL):** In v1, training on DermNet clinical photos yielded 95% test accuracy on DermNet but 0% on real selfies. Training data must strictly look like smartphone photos.
+3. **Discovery regarding `skin-assessment-dataset`:** Manual review and file inspection confirmed that `skin_assessment` is mostly repackaged DermNet (`07rosacea...`, `03eczema...`) plus non-face body parts. It **cannot** be trusted as our primary training pool for Rosacea or Dermatitis without domain contamination.
+4. **Manifest single source of truth:** `data/manifest/manifest.csv` tracks all images without copying raw files.
 
 ---
 
-## Current state of the repo (git: 2 commits on `main`)
+## 4. Current State of the Repository
 
-```
-.gitignore                      # ignores data/, venvs, *.pt, runs/
-requirements.txt                # pandas, requests, tqdm, Pillow, imagehash, opencv-python, pymupdf
-agent_guidelines.md, project_prompt.md, datasets_links.txt
-Literature_and_Papers/          # survey PDF + 5 papers + pptx
-src/sources/scin.py             # SCIN loader: load_cases(), group_weight(), explode_images(), CLASS_GROUPS
-scripts/scin_fetch_metadata.py  # downloads scin_cases.csv + scin_labels.csv (DONE)
-scripts/scin_explore.py         # read-only report → data/reports/scin_explore.md (DONE)
-download_data.py, filter_and_dedup.py   # LEGACY, do not use
-```
-
-### SCIN facts (already verified)
-- Public GCS bucket: images download over plain HTTPS at `https://storage.googleapis.com/dx-scin-public-data/<image_path>`, where `image_path` looks like `dataset/images/<id>.png`. No login needed.
-- The CSVs are at `data/raw/scin/dataset/`. Column names are **lowercase** (e.g. `body_parts_head_or_neck == "YES"`). The label-name column is `dermatologist_skin_condition_on_label_name`, and `weighted_skin_condition_label` is a dict stored as a string.
-- 5,033 cases / 10,407 images. **737 are HEAD_OR_NECK** (1,581 images), and 321 of those have no dermatologist label.
-- Facial cases with label weight ≥ 0.5: Acne 26 cases (60 images), Rosacea 16 (34), Eczema-broad 37 (75), Contact-dermatitis-broad 56 (131). Rosacea is almost all FST 1–2.
-- Each case has up to 3 images (one close-up, plus optional angled and at-distance shots). **All images from one case must stay together.**
-- Known issues: 15 duplicate images, 1 missing file.
-
-### Other local sources in `data/raw/` (all untouched)
-| Source | Content | Size | Notes |
-|---|---|---|---|
-| `skin-problems-34-on-the-iga-scale/images/<person>/{1,2,3}.jpg` | phone selfies, acne IGA 3–4 | 229 people / 687 images | good domain match; acne only; `df.csv` lists paths only |
-| `acne-dataset-in-yolov8-format/data-2/{train,valid,test}/{images,labels}` | acne + YOLO boxes | 927 images | look at samples first |
-| `skin-assessment-dataset/skin_assesment_dataset/{acne,Rosacea,Eczema,normal,...}` | 16 classes, ~1.1k each | ~4.8k relevant | **origin unknown**, may be scraped or DermNet; look at samples first |
-| `skin-defects-acne-redness-and-bags-under-the-eyes/files/{acne,redness,bags}/<person>/{front,left_side,right_side}.jpg` | selfies | 10 people per class | tiny |
-| `facial-skin-diseases-dataset/` | TFRecord detection set | ? | not inspected |
-| `massive-skin-disease-balanced-dataset/` | DermNet, augmented to ~7k per class | — | **EXCLUDED** |
-| Roboflow `face-skin-diseases` | facial | ? | needs a free API key (ask the user) |
-
-**The main bottleneck is phone-style photos for Rosacea and Normal.** Don't pick a fix (Roboflow, the skin-assessment set, or new collection) until the user has reviewed sample images.
+- **Git history:**
+  - `690cee8`: Initial handoff prompt and Step 4 spec
+  - `81cabee`: Step 4 completion (Manifest schema, SCIN test set download, local source loaders, HTML gallery generation)
+  - `b98438c`: Ignore `.env` and private keys in `.gitignore`
+  - `548bd15`: User added Roboflow rosacea dataset link in `datasets_links.txt`
+- **Environment & Keys:**
+  - Roboflow API key is stored securely in `.env` (`ROBOFLOW_API_KEY=...`) and git-ignored.
+  - `roboflow` Python SDK 1.7.1 installed.
+  - `mediapipe`, `opencv`, `grad-cam`, `timm`, `torch` installed with CUDA support.
+- **Manifest Status (`data/manifest/manifest.csv`):**
+  - Total registered images: 6,809
+  - External test (SCIN): 337 images (Acne: 58, Dermatitis: 245, Rosacea: 34)
+  - Train pool: 6,472 images (`iga34`: 687 acne, `yolo_acne`: 927 acne, `skin_defects`: 30 acne, `skin_assessment`: 4,828 mixed)
 
 ---
 
-## Next task: Step 4 (propose it to the user, then build after approval)
+## 5. User Review Feedback (Step 4C Results)
 
-### 4A. Manifest + SCIN external test set
-- Create `src/manifest.py` with a schema, read/write/validate helpers, and an append that never creates duplicate `image_id`s. Columns:
-  `image_id, source, subject_id, path, orig_label, label, label_confidence, body_part, shot_type, fst, role, phash, face_detected, review_status, split`
-  - `role` ∈ {`train_pool`, `external_test`}
-  - `review_status` ∈ {`pending`, `accepted`, `rejected`}
-- Add SCIN facial cases (HEAD_OR_NECK) for Acne / Rosacea / Dermatitis (Eczema-broad + Contact-dermatitis-broad from `CLASS_GROUPS`) with label weight ≥ 0.5. Mark them `role=external_test` and set `subject_id=case_id`. That's about 120 cases / about 270 images. If a case qualifies for two classes, flag it and don't assign it silently.
-- Download **only those images** to `data/raw/scin/dataset/images/`. Make the download resumable (skip files that already exist, write to `.part` then rename) and log failures.
+The user reviewed the generated HTML galleries (`data/reports/galleries/`) and gave the following verdict:
+1. **Labels:** Broadly accurate.
+2. **Domain & Non-face issue:** `scin - Dermatitis`, `skin_assessment - Dermatitis`, and `skin_assessment - Normal` contain non-face body photos (arms, legs, hands, torso). MediaPipe face filtering (Step 5) is required to filter out non-face imagery.
+3. **Data Gap Resolution:**
+   - The user found a dedicated Roboflow dataset specifically for Rosacea and added it to line 9 of `datasets_links.txt`:
+     `https://universe.roboflow.com/skin-face-ixq7s/rosacea-n6xhv-jnjno/`
+   - In addition, project `facial-skin-dataset/face-skin-diseases` was forked into the user's Roboflow workspace `d3l-m11` as `d3l-m11/face-skin-diseases-bbveb` (498 raw images: 100 rosacea, 99 eksim, 100 acne).
 
-### 4B. Inventory the local sources (nothing copied or deleted)
-- One loader per source in `src/sources/` that adds manifest rows pointing at the existing files, with `role=train_pool`. Cover IGA34 (Acne, `subject_id` = person folder), YOLO-acne, skin-assessment (acne/Rosacea/Eczema/normal only) and skin-defects (acne only; `redness` is not a diagnosis).
+---
 
-### 4C. Review galleries (⏸ STOP)
-- Generate one HTML contact sheet per source × class (about 60 random thumbnails each, fixed seed) in `data/reports/galleries/`.
-- Ask the user to judge for each source: does it look like real phone photos, and are the labels right? Then decide together which sources to trust, how to fill the Rosacea/Normal gap, and whether to get a Roboflow key.
+## 6. Immediate Next Tasks for the Next Assistant
 
-### Later steps (outline only; each needs approval)
-5. Face detection (MediaPipe) and region/patch cropping; record `face_detected` in the manifest.
-6. Near-duplicate dedup using pHash **Hamming distance ≤ ~6–8** (not exact match), across all sources and **before** splitting. Flag duplicates that appear under different classes instead of silently keeping one.
-7. Manual review of a representative sample (⏸ STOP).
-8. Split 70/15/15, stratified by class and **grouped by `subject_id`**. SCIN stays external.
-9. ResNet-50 baseline with weighted cross-entropy, judged on Macro-F1. Then EfficientNet-B0, and possibly an ensemble.
-10. 3 random seeds, Grad-CAM, and a per-Fitzpatrick-type breakdown on SCIN.
+### Task 1: Ingest Roboflow Rosacea Dataset (Solve the Rosacea Gap)
+- Check `datasets_links.txt` line 9 (`skin-face-ixq7s/rosacea-n6xhv-jnjno`).
+- Write a download script using `roboflow` SDK or API (reading `ROBOFLOW_API_KEY` from `.env`) to download the images into `data/raw/roboflow-rosacea/`. Ensure unaugmented/high-resolution images are fetched.
+- Write a source loader in `src/sources/roboflow_rosacea.py` to register them in `data/manifest/manifest.csv` with `label=Rosacea`, `role=train_pool`.
+- Inspect a small gallery of them to confirm they look like smartphone photos/close-ups before committing.
 
-**Start by summarising this handoff back to the user in a few lines, then present Step 4 and ask for approval.**
+### Task 2: Step 5 - Face Detection & Region Cropping Pipeline (MediaPipe)
+- Build `src/detection.py` and `scripts/run_face_detection.py`:
+  - Run MediaPipe face detector over all images in the manifest.
+  - Update `face_detected` boolean in `manifest.csv`.
+  - For images where `face_detected == False`, determine if they are valid close-up skin crops or non-face body parts (arms/legs/hands) that should have `review_status = rejected`.
+  - Implement the patch extraction logic:
+    - Selfie (face detected): crop patches for forehead, nose, left cheek, right cheek, and chin.
+    - Close-up (facial skin patch): tile into $224 \times 224$ patches.
+
+### Task 3: Step 6 - Perceptual Hashing & Deduplication
+- Implement `scripts/deduplicate.py` using `imagehash.phash`.
+- Deduplicate across ALL sources with Hamming distance $\le 6\text{--}8$.
+- Critical rule: Deduplicate **before** splitting to prevent data leakage. Flag any near-duplicates with conflicting class labels.
+
+### Task 4: Step 7 - Manual Review (⏸ STOP Point)
+- Present sample cropped patches and deduplication results to the user for review.
+
+### Task 5: Step 8 & 9 - Stratified Split & ResNet-50 Baseline
+- Split 70/15/15 grouped by `subject_id` and stratified by class.
+- Train ResNet-50 baseline with class-weighted cross-entropy and mixed precision, evaluated on Macro-F1 across 3 seeds.
+
+**Start by briefly acknowledging this handoff, confirming the next action (Task 1: Fetching the user's selected Rosacea dataset from Roboflow), and asking for the user's approval to proceed.**
