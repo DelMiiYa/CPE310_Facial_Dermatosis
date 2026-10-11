@@ -50,18 +50,18 @@ One patch classifier plus a pretrained face detector (MediaPipe) that decides ho
 
 ## 4. Current repo state (verified)
 
-**Git:** `main`, latest commits: `53f4695` (handoff update), `548bd15` (Roboflow rosacea link added), `b98438c` (`.env` ignored), `81cabee` (Step 4 code).
+**Git:** `main`, check `git log` for the current head. Relevant commits: `a51b601` (Roboflow rosacea download + loader), `33a3e54` (this handoff), `81cabee` (Step 4 code). `handoff_summary.md` / `HANDOFF_SUMMARY.md` is a previous agent's summary; **this file is the authority** where they disagree.
 
 **Code:**
 ```
 src/manifest.py                 # schema, load/append/validate, generate_image_id
 src/sources/scin.py             # SCIN metadata parsing, CLASS_GROUPS
-src/sources/{iga34,yolo_acne,skin_assessment,skin_defects}.py   # loaders
-scripts/scin_fetch_metadata.py, scin_explore.py, scin_download_filtered.py, generate_galleries.py
+src/sources/{iga34,yolo_acne,skin_assessment,skin_defects,roboflow_rosacea}.py   # loaders
+scripts/scin_fetch_metadata.py, scin_explore.py, scin_download_filtered.py, generate_galleries.py, roboflow_download.py
 ```
 `.env` holds `ROBOFLOW_API_KEY` (git-ignored).
 
-**Manifest (6,809 rows, all files exist):**
+**Manifest (7,897 rows, all files exist):**
 
 | role | source | label | images | `subject_id` |
 |---|---|---|---|---|
@@ -69,11 +69,12 @@ scripts/scin_fetch_metadata.py, scin_explore.py, scin_download_filtered.py, gene
 | train_pool | iga34 | Acne | 687 | person folder |
 | train_pool | yolo_acne | Acne | 927 | **empty** |
 | train_pool | skin_defects | Acne | 30 | person folder |
+| train_pool | roboflow_rosacea | Rosacea (`orig_label=redness`) | 1,088 | **empty**, and **augmented copies, see Known issue 8** |
 | train_pool | skin_assessment | Acne 1,185 / Dermatitis 1,192 / Normal 1,240 / Rosacea 1,211 | 4,828 | **empty** |
 
 `review_status` is `pending` for all training rows and `accepted` for SCIN.
 
-**Roboflow downloads: NOT DONE.** `data/raw/` has no Roboflow folder yet. Doing this is your first job (see Task 1).
+**Roboflow:** the Rosacea download is done (Task 1). The face-skin-diseases fork has **not** been downloaded (`data/raw/roboflow-face-skin/` does not exist). That is Task 1b, your first job.
 
 ---
 
@@ -85,32 +86,28 @@ scripts/scin_fetch_metadata.py, scin_explore.py, scin_download_filtered.py, gene
    - **Decide per class after looking at samples with the user.** Don't keep or drop silently.
 2. **Rosacea is the data bottleneck.** Almost no phone-style rosacea exists locally. Fix it with Task 1.
 3. **Dermatitis also needs a phone-style training source.** The face-skin-diseases fork (Task 1b) has about 99 "eksim" (eczema) images.
-4. **5,755 training images have no `subject_id`** (`skin_assessment`, `yolo_acne`). Since the split is grouped by `subject_id`, empty IDs would each count as their own person and leak the same person or near-duplicates across train and test. Fill them after dedup (Task 3): one cluster ID per near-duplicate group.
+4. **5,755 training images have no `subject_id`** (`skin_assessment`, `yolo_acne`). Since the split is grouped by `subject_id`, empty IDs would each count as their own person and leak the same person or near-duplicates across train and test. Fill them after dedup (Task 4): one cluster ID per near-duplicate group.
 5. **`review_status` is not recorded** even though the user reviewed galleries. After the user's per-source/class verdict, update the manifest (`accepted`/`rejected`).
 6. **`yolo_acne` ignores its bounding boxes** and isn't confirmed phone-style. Look at samples before trusting it.
 7. **Non-face images in SCIN.** The user found body photos in the SCIN gallery too (SCIN's `HEAD_OR_NECK` includes neck-only shots). Step 5's face filter must also mark these.
+8. **`roboflow_rosacea` is NOT unaugmented, despite the "no augmentation" export setting.** Files are named `<original>.rf.<hash>.jpg` (Roboflow's naming for augmented variants), with up to 10 copies of the same original in train. The 1,116 downloaded images come from only **669 unique originals** (train 506, valid 161, test 99), and the same original appears across Roboflow's own splits (57 train/valid, 28 train/test, 23 valid/test). The augmentation was most likely baked into the images in the user's fork. Consequences: (a) the real number of distinct rosacea photos is about 700 or fewer, not 1,088; (b) pHash dedup is mandatory before any split (Task 4); (c) never use Roboflow's train/valid/test folders as splits. Apply the same check to every new Roboflow download.
+9. **`roboflow_rosacea` labels are only a `redness` bounding box** (the annotation classes are `acne-GJuB` and `redness`), not a rosacea diagnosis. Any photo with redness gets `label=Rosacea`. Some filenames (`Gul-Hastaligi-...`, `kering-48-...`, `IMG-...-WA...`) suggest a mix of web and phone images. The user's approval was based on a gallery sample of about 60 images, so also review more images after dedup, and ask the user if any clinical-looking or GAN-looking images should be excluded.
+10. **Class balance (after dedup this will shift):** training currently has Acne about 2,800, Rosacea (Roboflow) about 700 distinct, Dermatitis 0 (until Task 1b), Normal undecided. Use class-weighted cross-entropy and report Macro-F1.
 
 ---
 
 ## 6. Tasks (do them in this order; propose each and wait for approval)
 
-### Task 1: Download the latest Roboflow Rosacea dataset (REQUIRED, not yet done)
-Dataset: `https://universe.roboflow.com/skin-face-ixq7s/rosacea-n6xhv-jnjno/` → workspace `skin-face-ixq7s`, project `rosacea-n6xhv-jnjno`.
+### Task 1: Roboflow Rosacea download ✅ DONE (commit `a51b601`), with caveats
+Done: `scripts/roboflow_download.py` (key read from `.env`, never printed) and `src/sources/roboflow_rosacea.py`. The fork `d3l-m11/rosacea-n6xhv-jnjno-rruul` was exported as version 1 (COCO) to `data/raw/roboflow-rosacea/` (1,116 images; 1,088 with a `redness` box registered as `label=Rosacea`, `orig_label=redness`). The user said the gallery sample "looks good".
+**Do not redo it. Caveats are in Known issues 8 and 9** (the set is full of augmented copies, and the label is only a "redness" box). If the user wants real originals, `skin-face-ixq7s/rosacea-n6xhv-jnjno` (the source project, not the fork) can be checked for an unaugmented version.
 
-1. Create `scripts/roboflow_download.py`. Read `ROBOFLOW_API_KEY` from `.env` (e.g. `python-dotenv`, or parse the file). **Never print the key.**
-2. Connect with the `roboflow` SDK: `Roboflow(api_key=...).workspace("skin-face-ixq7s").project("rosacea-n6xhv-jnjno")`.
-3. **List the project's versions and use the latest one** (print version numbers, image counts and any preprocessing/augmentation it reports). Prefer a version with **no augmentation**; if every version is augmented, download the highest-numbered one and tell the user so, because augmented copies cause dedup and leakage problems.
-4. Download it (COCO or folder format) to `data/raw/roboflow-rosacea/`. Make it re-runnable: skip if the folder already has files.
-5. Count images and classes. Roboflow exports may include other classes (e.g. non-rosacea); keep a record of the original class names.
-6. Write `src/sources/roboflow_rosacea.py` in the same style as the other loaders. Register images with `source=roboflow_rosacea`, `label=Rosacea` (only for images whose Roboflow class is actually rosacea), `role=train_pool`, `review_status=pending`, and use `generate_image_id`.
-7. **⏸ STOP:** generate a gallery with `scripts/generate_galleries.py` and ask the user whether these look like phone photos or clinical/GAN images. GAN images were used in Paper 5; they are not real phone photos, so the user may want them excluded.
-8. Commit.
-
-### Task 1b: Download the face-skin-diseases fork (REQUIRED, not yet done)
-The user forked `facial-skin-dataset/face-skin-diseases` into their own workspace: **`d3l-m11/face-skin-diseases-bbveb`** (498 raw images: about 100 rosacea, 99 "eksim"/eczema, 100 acne). It may have no generated version yet.
-1. In `scripts/roboflow_download.py`, list versions for workspace `d3l-m11`, project `face-skin-diseases-bbveb`. If **no version exists**, tell the user to create one in the Roboflow web UI with **no preprocessing and no augmentation**, and wait. (Don't try to export augmented data.)
-2. Download to `data/raw/roboflow-face-skin/`, then register with a loader. Map `rosacea` → `Rosacea`, `eksim` → `Dermatitis`, `acne` → `Acne`, keeping the original class name in `orig_label`.
-3. Show a gallery and **⏸ STOP** for review. Commit.
+### Task 1b: Download the face-skin-diseases fork (REQUIRED, NOT YET DONE; do this next)
+The user forked `facial-skin-dataset/face-skin-diseases` into **`d3l-m11/face-skin-diseases-bbveb`** (498 raw images: about 100 rosacea, 99 "eksim"/eczema, 100 acne, plus herpes and panu, which are out of scope). It may have no generated version yet. `scripts/roboflow_download.py` already has a `list_face_skin_versions()` helper.
+1. List versions. If **no version exists**, either create one via the Roboflow API with no preprocessing and no augmentation, or ask the user to click Generate in the web UI with both off, and wait.
+2. **Check for augmentation after downloading** (Known issue 8): look for `.rf.` stems with repeated originals. Report the number of unique originals vs. total files.
+3. Download to `data/raw/roboflow-face-skin/`, then register with `src/sources/roboflow_face_skin.py`. Map `rosacea` → `Rosacea`, `eksim` → `Dermatitis`, `acne` → `Acne`, keeping the original class name in `orig_label`; skip `herpes` and `panu`. Set `source=roboflow_face_skin`, `role=train_pool`, `review_status=pending`.
+4. Generate a gallery and **⏸ STOP** for review. Commit.
 
 ### Task 2: Review verdicts and source decisions (⏸ STOP)
 Show the user a summary table per source × class and ask for decisions on `skin_assessment` Normal/Acne, `yolo_acne`, and each Roboflow set (see Section 5). Record the results in `review_status` (`accepted`/`rejected`). Keep rejected images in the manifest; don't delete files.
@@ -123,6 +120,9 @@ Show the user a summary table per source × class and ask for decisions on `skin
 
 ### Task 4: Step 6, near-duplicate removal
 - `scripts/deduplicate.py` with `imagehash.phash`, **Hamming distance ≤ 6–8**, across **all sources**, **before splitting**. Store `phash` in the manifest.
+- **Roboflow augmented copies (see Known issue 8):** files named `<original>.rf.<hash>.jpg` are Roboflow-augmented variants of the same photo (up to 10 copies per original). Group them first by the filename stem before `.rf.`, then also cluster by pHash (flips and rotations change the pHash, so also hash the horizontally flipped image and compare both). Keep **one representative per cluster** in training (mark the rest `review_status=rejected` with a reason, never delete files) and give every member of a cluster the **same `subject_id`**.
+- **Ignore Roboflow's own `train/valid/test` folders.** The same original appears in several of them (57 train/valid, 28 train/test, 23 valid/test overlap). Our own split (Task 6) is the only split that counts.
+- Report before/after counts per source × class (the expected effect: `roboflow_rosacea` drops from 1,088 to roughly 700 distinct photos or fewer).
 - Flag near-duplicates that have **conflicting labels**; don't silently keep one.
 - Assign a `subject_id` to every image that doesn't have one (cluster ID), as described in Section 5.
 - Keep SCIN separate: any training image that near-matches an SCIN test image must be **dropped from training** to avoid leakage into the external test set.
