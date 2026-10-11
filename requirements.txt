@@ -5,9 +5,16 @@ tqdm>=4.66
 Pillow>=10.0
 imagehash>=4.3
 opencv-python>=4.8
+python-dotenv>=1.0
+roboflow>=1.1
+
+# Face detection / explainability / models
+mediapipe>=0.10
+timm>=1.0
+grad-cam>=1.5
 
 # Literature parsing (optional)
 pymupdf>=1.23
 
-# Training (install the CUDA build explicitly, see README) - added in later phases
-# torch / torchvision: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# PyTorch: install the CUDA build explicitly (default pip installs the CPU build on Windows):
+#   pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
