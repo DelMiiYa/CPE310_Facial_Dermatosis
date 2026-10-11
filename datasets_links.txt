@@ -6,3 +6,4 @@ https://www.kaggle.com/datasets/muhammadabdulsami/massive-skin-disease-balanced-
 https://www.kaggle.com/datasets/tapakah68/skin-problems-34-on-the-iga-scale
 https://github.com/google-research-datasets/scin
 https://universe.roboflow.com/facial-skin-dataset/face-skin-diseases
+https://universe.roboflow.com/skin-face-ixq7s/rosacea-n6xhv-jnjno/browse?queryText=&pageSize=100&startingIndex=0&browseQuery=true
