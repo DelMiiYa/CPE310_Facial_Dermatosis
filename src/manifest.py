@@ -9,7 +9,7 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "manifest" / "manifest.csv"
 COLUMNS = [
     "image_id", "source", "subject_id", "path", "orig_label", "label",
     "label_confidence", "body_part", "shot_type", "fst", "role", "phash",
-    "face_detected", "review_status", "split"
+    "face_detected", "face_conf", "face_area_frac", "review_status", "split"
 ]
 
 ROLES = {"train_pool", "external_test"}
@@ -43,11 +43,18 @@ def load_manifest() -> pd.DataFrame:
         "role": "string",
         "phash": "string",
         "face_detected": "boolean",
+        "face_conf": "float32",
+        "face_area_frac": "float32",
         "review_status": "string",
         "split": "string"
     }
-    df = pd.read_csv(MANIFEST_PATH, dtype=dtypes)
-    return df
+    header_cols = pd.read_csv(MANIFEST_PATH, nrows=0).columns.tolist()
+    applicable_dtypes = {k: v for k, v in dtypes.items() if k in header_cols}
+    df = pd.read_csv(MANIFEST_PATH, dtype=applicable_dtypes)
+    for col in COLUMNS:
+        if col not in df.columns:
+            df[col] = None
+    return df[COLUMNS]
 
 def validate_append(new_rows: pd.DataFrame, existing_df: pd.DataFrame) -> None:
     """Validate new rows before appending to ensure schema constraints."""
