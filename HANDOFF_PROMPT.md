@@ -143,4 +143,4 @@ EfficientNet-B0, a possible ensemble, **Grad-CAM** on all models (check the mode
 
 ---
 
-**Start by briefly confirming you've read this, then propose Task 1 (the Roboflow Rosacea download) and wait for the user's approval.**
+**Start by briefly confirming you've read this, then propose Task 1b (the face-skin-diseases fork download) and wait for the user's approval.**
