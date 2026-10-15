@@ -12,6 +12,7 @@ roboflow>=1.1
 mediapipe>=0.10
 timm>=1.0
 grad-cam>=1.5
+scikit-learn>=1.4
 
 # Literature parsing (optional)
 pymupdf>=1.23
