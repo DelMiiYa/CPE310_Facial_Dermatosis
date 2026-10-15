@@ -61,21 +61,21 @@ scripts/scin_fetch_metadata.py, scin_explore.py, scin_download_filtered.py, gene
 ```
 `.env` holds `ROBOFLOW_API_KEY` (git-ignored).
 
-**Manifest (7,897 rows, all files exist):**
+**Manifest Status (8,196 rows total, all files exist on disk):**
 
-| role | source | label | images | `subject_id` |
-|---|---|---|---|---|
-| external_test | scin | Acne 58 / Dermatitis 245 / Rosacea 34 | 337 | case id (149 cases) |
-| train_pool | iga34 | Acne | 687 | person folder |
-| train_pool | yolo_acne | Acne | 927 | **empty** |
-| train_pool | skin_defects | Acne | 30 | person folder |
-| train_pool | roboflow_rosacea | Rosacea (`orig_label=redness`) | 1,088 | **empty**, and **augmented copies, see Known issue 8** |
-| train_pool | roboflow_face_skin | Acne 100 / Dermatitis 99 / Rosacea 100 | 299 | **empty**; clean (all distinct originals); user approved |
-| train_pool | skin_assessment | Acne 1,185 / Dermatitis 1,192 / Normal 1,240 / Rosacea 1,211 | 4,828 | **empty** |
+| Role | Source | Label | Accepted (Clean) | Rejected (Preserved) | Total | Notes |
+|---|---|---|---|---|---|---|
+| `external_test` | `scin` | Acne (58) / Rosacea (34) / Dermatitis (245) | **337** | 0 | 337 | Strictly held-out test set (149 cases) |
+| `train_pool` | `iga34` | Acne | **686** | 1 | 687 | Real phone selfies (229 subjects) |
+| `train_pool` | `skin_defects` | Acne | **27** | 3 | 30 | Small selfie batch (10 subjects) |
+| `train_pool` | `roboflow_face_skin` | Acne (100) / Rosacea (48) / Dermatitis (93) | **241** | 58 | 299 | Distinct phone images (58 duplicates/conflicts rejected) |
+| `train_pool` | `roboflow_rosacea` | Rosacea | **616** | 472 | 1,088 | Unique original photos (444 augmented duplicates rejected) |
+| `train_pool` | `skin_assessment` | Normal | **644** | 596 | 1,240 | Verified face-detected normal shots (no-face rejected) |
+| `train_pool` | `skin_assessment` | Acne (1,185) / Rosacea (1,211) / Dermatitis (1,192) | **0** | 3,588 | 3,588 | Rejected (DermNet / non-face / surplus) |
+| `train_pool` | `yolo_acne` | Acne | **0** | 927 | 927 | Rejected (surplus augmented copies) |
+| **Total** | | | **2,551** | **5,645** | **8,196** | **2,214 train_pool + 337 external_test** |
 
-`review_status` is `pending` for all training rows and `accepted` for SCIN. **Total manifest rows: 8,196** (all files exist; counts above sum to 8,196).
-
-**Roboflow:** both downloads are done (Task 1 and Task 1b, commit `970fa5a`). Do not redo them.
+**Training pool distribution:** Acne: **813**, Rosacea: **664**, Normal: **644**, Dermatitis: **93**. All accepted rows have unified `subject_id`s. Zero test leakage with SCIN. Zero files deleted.
 
 ---
 
@@ -123,24 +123,29 @@ MediaPipe Tasks Vision `blaze_face_short_range.tflite` + `face_landmarker.task` 
 - 24 sample patches verified in `data/reports/galleries/step5_patch_samples.html`.
 - Full detection summary report saved at `data/reports/step5_face_detection_summary.md`.
 
-### Task 4: Step 6, near-duplicate removal
-- `scripts/deduplicate.py` with `imagehash.phash`, **Hamming distance ≤ 6–8**, across **all sources**, **before splitting**. Store `phash` in the manifest.
-- **Roboflow augmented copies (see Known issue 8):** files named `<original>.rf.<hash>.jpg` are Roboflow-augmented variants of the same photo (up to 10 copies per original). Group them first by the filename stem before `.rf.`, then also cluster by pHash (flips and rotations change the pHash, so also hash the horizontally flipped image and compare both). Keep **one representative per cluster** in training (mark the rest `review_status=rejected` with a reason, never delete files) and give every member of a cluster the **same `subject_id`**.
-- **Ignore Roboflow's own `train/valid/test` folders.** The same original appears in several of them (57 train/valid, 28 train/test, 23 valid/test overlap). Our own split (Task 6) is the only split that counts.
-- Report before/after counts per source × class (the expected effect: `roboflow_rosacea` drops from 1,088 to roughly 700 distinct photos or fewer).
-- Flag near-duplicates that have **conflicting labels**; don't silently keep one.
-- Assign a `subject_id` to every image that doesn't have one (cluster ID), as described in Section 5.
-- Keep SCIN separate: any training image that near-matches an SCIN test image must be **dropped from training** to avoid leakage into the external test set.
+### Task 4: Step 6, near-duplicate removal & subject clustering ✅ DONE (script `scripts/deduplicate.py`)
+- Computed 64-bit canonical and horizontal-flip pHashes for all 8,196 images.
+- Applied Task 2 source filtering: `skin_assessment` Rosacea/Dermatitis/Acne rejected (DermNet/non-face); `skin_assessment Normal` no-face rejected (512), faces accepted (644 distinct after dedup); `yolo_acne` surplus rejected (927).
+- SCIN external test leakage check: **0 leaks** found (zero overlap between training candidates and 337 SCIN test images).
+- `roboflow_rosacea`: collapsed from 1,088 images down to **616 distinct accepted originals** (444 redundant augmented copies rejected + 28 cross-source/conflict duplicates rejected).
+- Cross-dataset conflict check: detected and rejected **3 label conflict clusters** across datasets (e.g. conflicting Acne/Rosacea or Rosacea/Dermatitis).
+- Unified `subject_id`s assigned across all clusters and subjects (no empty `subject_id`s remain in the training pool).
+- Full summary report saved at `data/reports/step6_deduplication_summary.md`.
 
-### Task 5: Step 7, manual review (⏸ STOP)
-Show sample patches and dedup results to the user.
+### Task 5: Step 7, manual review (⏸ STOP - CURRENT STEP)
+Review the deduplicated dataset summary and sample patch extractions with the user before proceeding to split and baseline training.
+- Clean training pool: **2,214 images** (Acne: 813 / 330 subjects, Rosacea: 664 / 664 subjects, Normal: 644 / 404 subjects, Dermatitis: 93 / 93 subjects).
+- SCIN external test set: **337 images** (Acne: 58, Rosacea: 34, Dermatitis: 245).
+- Patch extraction preview: `data/reports/galleries/step5_patch_samples.html`.
 
 ### Task 6: Steps 8–9, split and ResNet-50 baseline
-- 70/15/15, stratified by class, grouped by `subject_id`. SCIN stays external.
-- ResNet-50 with class-weighted cross-entropy, mixed precision, **Macro-F1**, **3 seeds**.
+- 70/15/15 stratified by class and grouped by `subject_id` (so all photos/angles/augmented variants of the same person/cluster remain strictly within the same fold; zero data leakage).
+- SCIN external test set remains strictly separate and unseen.
+- ResNet-50 baseline trained with class-weighted cross-entropy (essential given Dermatitis at 93 images vs ~650-800 for other classes), mixed precision (`torch.amp.autocast`), batch size 16–32, low-VRAM DataLoader optimizations (`pin_memory=True`, `persistent_workers=True`, `num_workers=4`).
+- Evaluated on Macro-F1 across 3 random seeds.
 
 ### Task 7: Later (after the baseline)
-EfficientNet-B0, a possible ensemble, **Grad-CAM** on all models (check the model isn't looking at backgrounds), and a **per-Fitzpatrick-type breakdown on SCIN** (the `fst` column).
+EfficientNet-B0, model ensemble comparison, **Grad-CAM** interpretability verification, and **per-Fitzpatrick-type breakdown on SCIN** (`fst` column).
 
 ### Housekeeping to fold into the steps above
 - Update `requirements.txt` with the packages actually used (torch is installed with the cu124 index; mediapipe, timm, grad-cam, roboflow, python-dotenv).
@@ -148,4 +153,4 @@ EfficientNet-B0, a possible ensemble, **Grad-CAM** on all models (check the mode
 
 ---
 
-**Current status:** Tasks 1, 1b, and 3 are completed. Next is finalizing the Task 2 dataset decisions (filtering out DermNet/non-face images) and proceeding to Task 4 (pHash deduplication and subject grouping).
+**Current status:** Tasks 1, 1b, 3, and 4 are complete. Next is presenting the Task 5 review to the user, and upon approval proceeding to Task 6 (Step 8: 70/15/15 grouped stratified split & Step 9: ResNet-50 baseline training).

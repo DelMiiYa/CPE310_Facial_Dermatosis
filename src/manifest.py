@@ -9,7 +9,8 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "manifest" / "manifest.csv"
 COLUMNS = [
     "image_id", "source", "subject_id", "path", "orig_label", "label",
     "label_confidence", "body_part", "shot_type", "fst", "role", "phash",
-    "face_detected", "face_conf", "face_area_frac", "review_status", "split"
+    "face_detected", "face_conf", "face_area_frac", "review_status",
+    "rejection_reason", "split"
 ]
 
 ROLES = {"train_pool", "external_test"}
@@ -46,6 +47,7 @@ def load_manifest() -> pd.DataFrame:
         "face_conf": "float32",
         "face_area_frac": "float32",
         "review_status": "string",
+        "rejection_reason": "string",
         "split": "string"
     }
     header_cols = pd.read_csv(MANIFEST_PATH, nrows=0).columns.tolist()
