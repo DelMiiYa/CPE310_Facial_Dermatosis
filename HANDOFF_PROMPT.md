@@ -132,17 +132,25 @@ MediaPipe Tasks Vision `blaze_face_short_range.tflite` + `face_landmarker.task` 
 - Unified `subject_id`s assigned across all clusters and subjects (no empty `subject_id`s remain in the training pool).
 - Full summary report saved at `data/reports/step6_deduplication_summary.md`.
 
-### Task 5: Step 7, manual review (⏸ STOP - CURRENT STEP)
-Review the deduplicated dataset summary and sample patch extractions with the user before proceeding to split and baseline training.
-- Clean training pool: **2,214 images** (Acne: 813 / 330 subjects, Rosacea: 664 / 664 subjects, Normal: 644 / 404 subjects, Dermatitis: 93 / 93 subjects).
+### Task 5: Step 7, manual review ✅ DONE
+- Clean training pool reviewed: **2,214 images** (Acne: 813 / 330 subjects, Rosacea: 664 / 664 subjects, Normal: 644 / 404 subjects, Dermatitis: 93 / 93 subjects).
 - SCIN external test set: **337 images** (Acne: 58, Rosacea: 34, Dermatitis: 245).
-- Patch extraction preview: `data/reports/galleries/step5_patch_samples.html`.
+- Patch extraction preview verified: `data/reports/galleries/step5_patch_samples.html`.
 
 ### Task 6: Steps 8–9, split and ResNet-50 baseline
-- 70/15/15 stratified by class and grouped by `subject_id` (so all photos/angles/augmented variants of the same person/cluster remain strictly within the same fold; zero data leakage).
-- SCIN external test set remains strictly separate and unseen.
-- ResNet-50 baseline trained with class-weighted cross-entropy (essential given Dermatitis at 93 images vs ~650-800 for other classes), mixed precision (`torch.amp.autocast`), batch size 16–32, low-VRAM DataLoader optimizations (`pin_memory=True`, `persistent_workers=True`, `num_workers=4`).
-- Evaluated on Macro-F1 across 3 random seeds.
+- **Step 8: 70/15/15 stratified grouped split ✅ DONE (script `scripts/split_dataset.py`)**
+  - Stratified by class and grouped by `subject_id` (zero subject leakage across train/val/test).
+  - Train: 1,617 images (1,047 subjects) - Acne 591, Rosacea 466, Normal 497, Dermatitis 63.
+  - Val: 294 images (222 subjects) - Acne 109, Rosacea 99, Normal 71, Dermatitis 15.
+  - In-Domain Test: 303 images (222 subjects) - Acne 113, Rosacea 99, Normal 76, Dermatitis 15.
+  - External Test (SCIN): 337 images (149 cases) - strictly held-out.
+  - Report saved to `data/reports/step8_split_summary.md`. Manifest updated.
+- **Step 9: ResNet-50 baseline (CURRENT STEP)**
+  - PyTorch Dataset (`src/dataset.py`) supporting patch-based training & inference.
+  - Model & Loss (`src/model.py`): ResNet-50 with inverse-frequency class weights ($w_c = \frac{N_{total}}{C \times N_c}$).
+  - Training pipeline (`scripts/train_baseline.py`): Mixed precision (`torch.amp.autocast`), AdamW, CosineAnnealingLR, batch size 32, pin_memory=True, persistent_workers=True, num_workers=4.
+  - Metrics tracked: Macro-F1 (primary), per-class F1, Accuracy, Loss across 3 seeds. Best checkpoint to `checkpoints/resnet50_baseline_best.pt`.
+  - In-domain test and strictly held-out SCIN external test evaluation.
 
 ### Task 7: Later (after the baseline)
 EfficientNet-B0, model ensemble comparison, **Grad-CAM** interpretability verification, and **per-Fitzpatrick-type breakdown on SCIN** (`fst` column).
@@ -153,4 +161,4 @@ EfficientNet-B0, model ensemble comparison, **Grad-CAM** interpretability verifi
 
 ---
 
-**Current status:** Tasks 1, 1b, 3, and 4 are complete. Next is presenting the Task 5 review to the user, and upon approval proceeding to Task 6 (Step 8: 70/15/15 grouped stratified split & Step 9: ResNet-50 baseline training).
+**Current status:** Step 8 (Dataset Split) is complete. Next is implementing Step 9: PyTorch Dataset, Model architecture, and Training Pipeline for ResNet-50 baseline.
