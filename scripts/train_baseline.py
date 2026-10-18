@@ -205,17 +205,18 @@ def evaluate_image_level(
 
 def train_baseline(
     seed: int = 42,
-    epochs: int = 20,
+    epochs: int = 15,
     batch_size: int = 32,
     lr: float = 1e-4,
     weight_decay: float = 1e-2,
     num_workers: int = 4,
     patience: int = 6,
+    backbone: str = "resnet50",
 ) -> Dict[str, Any]:
-    """Train ResNet-50 baseline on single seed."""
+    """Train classifier baseline on single seed with specified backbone."""
     set_seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    logging.info(f"--- Training ResNet-50 Baseline (Seed {seed}) on {device} ---")
+    logging.info(f"--- Training {backbone} Baseline (Seed {seed}) on {device} ---")
 
     # Datasets
     train_patch_ds = FacialDermatosisPatchDataset(split="train", transform=get_train_transforms())
@@ -256,7 +257,7 @@ def train_baseline(
     criterion = get_loss_function(class_weights=class_weights)
 
     # Model
-    model = build_model(model_name="resnet50", num_classes=NUM_CLASSES, pretrained=True, drop_rate=0.2, device=device)
+    model = build_model(model_name=backbone, num_classes=NUM_CLASSES, pretrained=True, drop_rate=0.2, device=device)
 
     # Optimizer & Scheduler
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -264,10 +265,11 @@ def train_baseline(
     scaler = torch.amp.GradScaler("cuda")
 
     # Run logging
-    run_dir = RUNS_DIR / f"resnet50_seed{seed}"
+    run_dir = RUNS_DIR / f"{backbone}_seed{seed}"
     run_dir.mkdir(parents=True, exist_ok=True)
     CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
-    best_checkpoint_path = CHECKPOINTS_DIR / f"resnet50_seed{seed}_best.pt"
+    best_checkpoint_path = CHECKPOINTS_DIR / f"{backbone}_seed{seed}_best.pt"
+    baseline_checkpoint_path = CHECKPOINTS_DIR / f"{backbone}_baseline_best.pt"
 
     best_val_img_f1 = -1.0
     best_epoch = -1
@@ -313,33 +315,19 @@ def train_baseline(
             best_val_img_f1 = val_img_f1
             best_epoch = epoch
             no_improve_epochs = 0
-            save_checkpoint(
-                {
-                    "epoch": epoch,
-                    "seed": seed,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "val_image_macro_f1": val_img_f1,
-                    "val_image_acc": val_img_acc,
-                    "class_weights": class_weights.cpu(),
-                },
-                best_checkpoint_path,
-                is_best=True,
-            )
-            # Also save canonical baseline checkpoint
-            torch.save(
-                {
-                    "epoch": epoch,
-                    "seed": seed,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "val_image_macro_f1": val_img_f1,
-                    "val_image_acc": val_img_acc,
-                    "class_weights": class_weights.cpu(),
-                },
-                CHECKPOINTS_DIR / "resnet50_baseline_best.pt"
-            )
-            logging.info(f" -> Best checkpoint saved with Val Image Macro-F1: {val_img_f1:.4f}")
+            checkpoint_payload = {
+                "epoch": epoch,
+                "seed": seed,
+                "model_name": backbone,
+                "model_state_dict": model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "val_image_macro_f1": val_img_f1,
+                "val_image_acc": val_img_acc,
+                "class_weights": class_weights.cpu(),
+            }
+            torch.save(checkpoint_payload, best_checkpoint_path)
+            torch.save(checkpoint_payload, baseline_checkpoint_path)
+            logging.info(f" -> Best checkpoint saved with Val Image Macro-F1: {val_img_f1:.4f} to {best_checkpoint_path}")
         else:
             no_improve_epochs += 1
             if no_improve_epochs >= patience:
@@ -365,6 +353,7 @@ def train_baseline(
 
     return {
         "seed": seed,
+        "backbone": backbone,
         "best_epoch": best_epoch,
         "best_val_img_f1": best_val_img_f1,
         "test_eval": test_eval,
@@ -374,16 +363,27 @@ def train_baseline(
     }
 
 
-def generate_evaluation_report(results_by_seed: List[Dict[str, Any]], output_path: Path = REPORTS_DIR / "step9_resnet50_baseline_report.md"):
+def generate_evaluation_report(
+    results_by_seed: List[Dict[str, Any]],
+    output_path: Optional[Path] = None,
+):
     """Compile comprehensive markdown report with seed statistics, confusion matrices, and FST breakdown."""
+    backbone = results_by_seed[0].get("backbone", "resnet50")
+    if output_path is None:
+        if backbone == "resnet50":
+            output_path = REPORTS_DIR / "step9_resnet50_baseline_report.md"
+        else:
+            output_path = REPORTS_DIR / f"{backbone}_report.md"
+    output_path = Path(output_path)
+
     lines = [
-        "# Step 9: ResNet-50 Baseline Evaluation Report",
+        f"# {backbone} Evaluation Report",
         "",
-        "This report summarizes the performance of the patch-based **ResNet-50** baseline on facial dermatological conditions (`Acne`, `Rosacea`, `Dermatitis`, `Normal`).",
+        f"This report summarizes the performance of the patch-based **{backbone}** model on facial dermatological conditions (`Acne`, `Rosacea`, `Dermatitis`, `Normal`).",
         "",
         "## 1. Experimental Setup & Hardware Guardrails",
         "",
-        "- **Model Architecture:** `resnet50` (pretrained ImageNet-1k weights via `timm`)",
+        f"- **Model Architecture:** `{backbone}` (pretrained ImageNet-1k weights via `timm`)",
         "- **Training Strategy:** Patch-based training (224x224 anatomical face crops & close-up tiles) with aggregate mean-probability pooling at inference",
         "- **Loss Function:** Inverse-frequency class-weighted Cross-Entropy loss ($w_c = N_{total} / (C \\times N_c)$)",
         "- **Optimizer:** AdamW (`lr=1e-4`, `weight_decay=1e-2`), Cosine Annealing learning rate schedule",
@@ -511,12 +511,15 @@ def generate_evaluation_report(results_by_seed: List[Dict[str, Any]], output_pat
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train and evaluate ResNet-50 baseline")
+    parser = argparse.ArgumentParser(description="Train and evaluate classifier baseline")
+    parser.add_argument("--backbone", type=str, default="resnet50", help="Model backbone (e.g. resnet50, efficientnet_b0)")
     parser.add_argument("--epochs", type=int, default=15, help="Number of training epochs")
     parser.add_argument("--batch-size", type=int, default=32, help="DataLoader batch size")
     parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
     parser.add_argument("--num-workers", type=int, default=4, help="DataLoader num_workers")
+    parser.add_argument("--patience", type=int, default=6, help="Early stopping patience")
     parser.add_argument("--seeds", type=int, nargs="+", default=[42], help="Random seeds to run")
+    parser.add_argument("--output-report", type=Path, default=None, help="Custom output report path")
     args = parser.parse_args()
 
     results = []
@@ -527,10 +530,12 @@ def main():
             batch_size=args.batch_size,
             lr=args.lr,
             num_workers=args.num_workers,
+            patience=args.patience,
+            backbone=args.backbone,
         )
         results.append(res)
 
-    generate_evaluation_report(results)
+    generate_evaluation_report(results, output_path=args.output_report)
 
 
 if __name__ == "__main__":

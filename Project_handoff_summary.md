@@ -143,52 +143,104 @@ The objective is to train, evaluate, and interpret a robust multi-class deep lea
   - *Key Finding:* Accuracy on darker skin types (`FST4-5`) exceeded lighter skin types, confirming robust representation across skin tones.
 * Report: [`data/reports/step9_resnet50_baseline_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step9_resnet50_baseline_report.md).
 
+### Step 10 (Task 7A): EfficientNet-B0 Training & Head-to-Head Comparison
+* Parameterized [`scripts/train_baseline.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/train_baseline.py) (`--backbone efficientnet_b0`) and updated [`src/inference.py`](file:///e:/CPE310FacialDermatorsisProject/src/inference.py) with automatic backbone detection.
+* Trained `efficientnet_b0` on identical 14,330 patches, 70/15/15 folds, and inverse-frequency class weights (`seed=42`, 15 epochs, ~36s/epoch).
+* **Best Checkpoint:** [`checkpoints/efficientnet_b0_baseline_best.pt`](file:///e:/CPE310FacialDermatorsisProject/checkpoints/efficientnet_b0_baseline_best.pt) (Epoch 9, Best Val Image Macro-F1 = **`0.9227`**, +3.30% over ResNet-50's `0.8897`).
+* **Efficiency & Diagnostic Comparison (ResNet-50 vs. EfficientNet-B0):**
+  - **Parameters:** `4.01M` vs. `23.52M` (**-82.9%** reduction).
+  - **Checkpoint Size:** `46.4 MB` vs. `269.6 MB` (**-82.8%** reduction).
+  - **In-Domain Test (303 images):** Overall Accuracy **`92.74%`** (identical to ResNet-50), Macro-F1 **`0.8644`** (vs. `0.8841` for ResNet-50).
+    - **Acne F1:** **`0.9464`** (+0.53% vs. ResNet-50, recall `93.81%`).
+    - **Rosacea F1:** **`0.9100`** (+0.09% vs. ResNet-50, recall `91.92%`).
+    - **Dermatitis F1:** `0.6207` (higher precision `64.29%` vs. `63.16%`, lower recall `60.00%` vs. `80.00%`).
+    - **Normal F1:** **`0.9804`** (identical 75/76 recall).
+  - **SCIN Held-Out External Test (337 images):** Macro-F1 `0.1477`, Accuracy `19.58%`, with **Rosacea F1 improving +5.00%** (`0.2500` vs. `0.2000`) and Acne recall improving to **`93.10%`** (54/58).
+  - **Oracle Ensemble Potential:** Both models agree and are correct on 275/303 test images (`90.76%`), while ResNet-50 and EfficientNet-B0 each uniquely solve 6 images the other misses, yielding an **oracle ensemble ceiling of `94.72%` (287/303)**.
+* Report: [`data/reports/step10_efficientnet_b0_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step10_efficientnet_b0_report.md).
+
+### Step 11 (Task 7B): ResNet-50 + EfficientNet-B0 Model Ensemble
+* Implemented [`src/ensemble.py`](file:///e:/CPE310FacialDermatorsisProject/src/ensemble.py) (`DermatosisEnsemble` + `find_optimal_ensemble_weights`), [`scripts/evaluate_ensemble.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/evaluate_ensemble.py), and `--ensemble` support in [`src/inference.py`](file:///e:/CPE310FacialDermatorsisProject/src/inference.py).
+* **Validation Weight Tuning (294 images, zero test leakage):**
+  - 1D grid search over $w_{\text{resnet}} \in [0.00, 1.00]$ identified equal probability averaging **$w^* = (0.50, 0.50)$** as optimal, reaching **`0.9264` Val Macro-F1** and **`95.92%` Val Accuracy** (`282/294` images) — outperforming both single models (`0.8897` ResNet-50 and `0.9227` EfficientNet-B0).
+* **In-Domain Test Performance (303 images):**
+  - **Accuracy:** **`92.41%`** (`280/303` images), **Macro-F1:** **`0.8621`** (Acne F1: `0.9417`, Rosacea F1: `0.9055`, Dermatitis F1: `0.6207`, Normal F1: `0.9804`).
+  - **Disagreement Resolution:** Across the 303 test images, ResNet-50 and EfficientNet-B0 agreed on 288 (`95.05%`) and disagreed on 15 (`4.95%`). Soft probability fusion resolved **5/15 (`33.3%`)** disagreement cases correctly. The remaining Dermatitis conflicts revealed overconfident EfficientNet-B0 softmax spikes, motivating post-hoc temperature scaling in Task 7D.
+  - **Real-Time Latency:** 5-patch selfie inference takes **`16.39 ms`** (`30.6 images/sec` throughput) on RTX 3050.
+* **SCIN Held-Out External Test Performance (337 images):**
+  - **Macro-F1:** **`0.1665`** (highest of all evaluated models, improving over ResNet-50's `0.1544` and EfficientNet-B0's `0.1477`), **Accuracy:** `20.77%`.
+  - **Acne Recall:** **`94.83%`** (`55/58` detected, highest of all models).
+  - **Rosacea F1:** **`0.3103`** (+11.03% over ResNet-50's `0.2000` and +6.03% over EfficientNet-B0's `0.2500`).
+  - **Fitzpatrick Skin Type Accuracy:** `FST4` (`31.6%`) and `FST5` (`36.0%`) remain highest, with `FST2` improving to `16.2%`.
+* Saved per-image prediction probability CSVs to `runs/ensemble_seed42/{val,test,scin}_predictions.csv`.
+* Report: [`data/reports/step11_ensemble_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step11_ensemble_report.md).
+
+### Step 12 (Task 7C): Grad-CAM Visual Interpretability & Saliency Analysis
+* Implemented [`src/explainability.py`](file:///e:/CPE310FacialDermatorsisProject/src/explainability.py) (`DermatosisExplainer` targeting `resnet50.layer4[-1]`, `efficientnet_b0.conv_head`, and the fused Ensemble CAM $0.5 \cdot \text{CAM}_{\text{resnet}} + 0.5 \cdot \text{CAM}_{\text{effnet}}$) and [`scripts/generate_gradcam.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/generate_gradcam.py).
+* **Quantitative Anatomical Region Attribution (224 face-detected test selfies):**
+  - **Rosacea:** Centrofacial/malar regions (`nose`, `left_cheek`, `right_cheek`) achieved the highest mean target probabilities (`80.2%`, `85.0%`, `84.3%`) and accounted for **`68.1%`** of dominant patch attributions (`22.7%` each), matching clinical malar flush localization.
+  - **Acne:** Dominant attribution concentrated across sebaceous T-zone and lateral cheeks (`chin` `28.9%`, `right_cheek` `20.6%`, `left_cheek` `19.6%`, `forehead` `16.5%`).
+  - **Dermatitis:** `chin`/perioral (`42.9%` dominant, `60.4%` mean prob) and `left_cheek` (`56.3%` mean prob) led attribution.
+  - **Normal:** Uniformly high target probability (`96.7%–97.9%`) across all 5 regions without false focal lesion activation.
+* **Qualitative Cohort Visualizations (16 multi-panel PNGs in `data/reports/gradcam_samples/`):**
+  - **Cohorts A & B:** Verified clean lesion-level focus on inflammatory papules, telangiectasia/erythema, and eczematous scaling across full-face selfies and close-up macro tiles while ignoring eyes, lips, hair, and background.
+  - **Cohorts C & D (Mechanistic Root Cause of Dermatitis-to-Acne Confusion):** Revealed that EfficientNet-B0's depthwise-separable convolutions with squeeze-and-excitation strongly latch onto sharp, high-frequency circular micro-papules in acute contact/atopic dermatitis (`scin_bb48c000df7e`, `scin_a2060741433b`, `roboflow_face_skin_fba72dde5494`), producing overconfident `>86%–97%` Acne probability spikes that override ResNet-50's broader $3 \times 3$ plaque-aware receptive field.
+* Interactive Gallery: [`data/reports/galleries/step12_gradcam_gallery.html`](file:///e:/CPE310FacialDermatorsisProject/data/reports/galleries/step12_gradcam_gallery.html).
+* Report: [`data/reports/step12_gradcam_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step12_gradcam_report.md).
+
+### Step 13 (Task 7D): SCIN Domain Gap Analysis & Post-Hoc Confidence Calibration
+* Implemented [`src/calibration.py`](file:///e:/CPE310FacialDermatorsisProject/src/calibration.py) (`compute_ece_and_brier`, `temperature_scale_probs`, `fit_calibrated_ensemble`, `apply_bayes_prior_adjustment`, `evaluate_selective_prediction`) and [`scripts/analyze_scin_domain_gap.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/analyze_scin_domain_gap.py).
+* **Zero-Leakage Validation Temperature Scaling ($T_{\text{resnet}} = 0.60, T_{\text{effnet}} = 1.20, w_{\text{resnet}} = 0.40$ fit strictly on `val` 294 images):**
+  - **Validation Split (`294` images):** Increases Val Macro-F1 from `0.9264` to **`0.9372`** and Val Accuracy from `95.92%` to **`96.26%`**.
+  - **In-Domain Test Split (`303` images):** Increases Test Macro-F1 from `0.8621` to **`0.8736`**, restores Test Accuracy to **`92.74%` (`281/303`)**, reduces Expected Calibration Error (ECE) by **36.0%** (from `0.0308` down to **`0.0197`**), and improves test disagreement resolution from `5/15 (33.3%)` to **`6/15 (40.0%)`**.
+* **Deconstruction of the SCIN External Test Domain Gap (`337` images):**
+  - **Factor 1 — Severe Label Prior Shift (`3.9%` vs. `72.7%` Dermatitis):**
+    - Applying **Zero-Leakage Symptomatic 3-Class Triage Mode** ($\pi(\text{Normal}) = 0$, equal $1/3$ disease priors across `Acne`, `Rosacea`, `Dermatitis` — requiring **zero knowledge of SCIN's label distribution**):
+      - **SCIN Accuracy more than doubles:** `20.77%` $\rightarrow$ **`44.51%`**
+      - **SCIN Macro-F1 more than doubles:** `0.1665` $\rightarrow$ **`0.3321`**
+      - **SCIN Dermatitis Recall surges 18.5×:** `2.45%` (`6/245`) $\rightarrow$ **`45.31%` (`111/245`)** (Dermatitis F1: `0.0476` $\rightarrow$ **`0.5550`**).
+    - Under the **Oracle Target-Prior Bound**, SCIN Accuracy reaches **`67.36%`** and Dermatitis Recall reaches **`86.12%` (`211/245`)**, proving that **>70% of the SCIN external performance drop is attributable to label prior shift** rather than feature extraction failure.
+  - **Factor 2 — Capture Modality Shift (`face_detected == False` Close-Ups):**
+    - **82.5% (`278/337`) of SCIN images are macro close-ups** lacking facial landmarks. On genuine full-face selfies (`face_detected == True`, `59` images), baseline accuracy is **`28.81%`** (vs. `19.06%` on close-ups) and Symptomatic Triage Dermatitis recall reaches **`54.5%`**.
+  - **Factor 3 — Sub-Threshold Diagnostic Signal:**
+    - Among the 220 SCIN Dermatitis images initially predicted as `Acne`, the #2 runner-up prediction is an inflammatory condition (`Rosacea` `75.0%` or `Dermatitis` `19.6%`) in **`94.55%`** of cases.
+* **Clinical Selective Abstention (Reject Option):**
+  - On In-Domain Test (`303` images), withholding ambiguous predictions ("Refer to Dermatologist") yields **`97.07%` Accuracy (`0.9320` Macro-F1)** at **90% coverage** (`273/303`) and **`99.17%` Accuracy (`240/242` correct, `0.9464` Macro-F1)** at **80% coverage**.
+* Diagnostic Plots: `data/reports/calibration_plots/reliability_diagram_test_and_scin.png` and `scin_domain_gap_breakdown.png`.
+* Report: [`data/reports/step13_scin_domain_gap_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step13_scin_domain_gap_report.md).
+
 ---
 
 ## 4. Production Artifacts & Inference Guide
 
 ### Checkpoints:
-- `checkpoints/resnet50_baseline_best.pt` (Canonical best baseline weights, 282 MB)
-- `checkpoints/resnet50_seed42_best.pt` (Seed 42 checkpoint)
+- `checkpoints/resnet50_baseline_best.pt` (Canonical best ResNet-50 weights, 269.6 MB, Epoch 11)
+- `checkpoints/resnet50_seed42_best.pt` (ResNet-50 Seed 42 checkpoint)
+- `checkpoints/efficientnet_b0_baseline_best.pt` (Canonical best EfficientNet-B0 weights, 46.4 MB, Epoch 9)
+- `checkpoints/efficientnet_b0_seed42_best.pt` (EfficientNet-B0 Seed 42 checkpoint)
 
-### Running Inference on Any Raw Photo:
-The standalone inference engine [`src/inference.py`](file:///e:/CPE310FacialDermatorsisProject/src/inference.py) handles arbitrary input images:
+### Running Inference, Grad-CAM & Calibration Analysis:
+The standalone inference engine [`src/inference.py`](file:///e:/CPE310FacialDermatorsisProject/src/inference.py), explainability engine [`src/explainability.py`](file:///e:/CPE310FacialDermatorsisProject/src/explainability.py), and calibration pipeline [`scripts/analyze_scin_domain_gap.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/analyze_scin_domain_gap.py) can be run directly from the project root:
 ```powershell
 python src/inference.py --image "data/raw/skin-problems-34-on-the-iga-scale/images/104/1.jpg"
-```
-Output:
-```
-==================================================
-PREDICTION RESULT
-==================================================
-Predicted Class: Acne (Confidence: 99.99%)
-Face Detected:   True (5 patches evaluated)
-
-Class Probabilities:
-  Acne        : 99.99%
-  Rosacea     : 0.00%
-  Dermatitis  : 0.00%
-  Normal      : 0.01%
-==================================================
+python src/inference.py --image "data/raw/skin-problems-34-on-the-iga-scale/images/104/1.jpg" --checkpoint checkpoints/efficientnet_b0_baseline_best.pt
+python src/inference.py --image "data/raw/skin-problems-34-on-the-iga-scale/images/104/1.jpg" --ensemble
+python src/explainability.py --image "data/raw/skin-problems-34-on-the-iga-scale/images/104/1.jpg" --output "data/reports/gradcam_demo.png"
+python scripts/analyze_scin_domain_gap.py
 ```
 
 ---
 
-## 5. Current Project State & Immediate Next Steps (Task 7)
+## 5. Current Project State & Final Milestone Summary
 
 > [!IMPORTANT]
-> **Current Milestone:** Step 9 (ResNet-50 Baseline) is fully completed, evaluated, and committed to git. Task 7 is ready to begin.
+> **Project Status: ALL PHASES (Steps 1–13 / Tasks 1–7D) COMPLETED & AUDITED ✅**
 
-### Upcoming Work (Task 7: Advanced Architectures, Ensemble & Explainability):
-1. **EfficientNet-B0 Model:**
-   - Train `efficientnet_b0` on identical 14,330 patches, identical 70/15/15 folds, and identical class weights.
-   - Compare parameter count (~5.3M vs ~25.6M for ResNet-50), inference latency, and Macro-F1.
-2. **Model Ensemble:**
-   - Implement `src/ensemble.py` combining ResNet-50 and EfficientNet-B0 via probability averaging ($\frac{P_{resnet} + P_{effnet}}{2}$) as mandated by the literature survey.
-3. **Grad-CAM Interpretability:**
-   - Implement `src/explainability.py` using `pytorch-grad-cam` to generate class activation heatmaps across face landmark crops and close-up tiles.
-4. **SCIN Dermatitis vs. Acne Domain Gap Analysis:**
-   - Investigate why crowd-sourced dermatitis close-ups trigger acne predictions (papular vs. eczematous texture overlap) and explore confidence calibration or threshold tuning.
+### Completed Task 7 Summary (see [`tasks/TASK7_MASTER_PLAN.md`](file:///e:/CPE310FacialDermatorsisProject/tasks/TASK7_MASTER_PLAN.md)):
+1. ✅ **Task 7A — EfficientNet-B0 Model (Step 10):** Trained `efficientnet_b0`, verified **82.9% parameter reduction** (`4.01M` vs `23.52M`), **`92.74%` In-Domain Test Accuracy**, **`0.9227` Val Macro-F1**, and **`94.72%` (`287/303`)** theoretical ensemble oracle ceiling ([`step10_efficientnet_b0_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step10_efficientnet_b0_report.md)).
+2. ✅ **Task 7B — Dual-Backbone Ensemble (Step 11):** Implemented `src/ensemble.py` and `scripts/evaluate_ensemble.py`, achieving **`0.9264` Val Macro-F1 (`95.92%` Val Acc)**, **`92.41%` In-Domain Test Acc** (`16.39 ms` 5-patch latency), and **`0.1665` SCIN External Test Macro-F1** (`0.3103` Rosacea F1, `94.83%` Acne recall) ([`step11_ensemble_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step11_ensemble_report.md)).
+3. ✅ **Task 7C — Grad-CAM Visual Interpretability (Step 12):** Implemented `src/explainability.py` and `scripts/generate_gradcam.py`, proved clinical malar/centrofacial localization (`68.1%`) in Rosacea and T-zone/cheek localization in Acne across 224 test selfies, and generated 16 multi-panel diagnostic figures + [`step12_gradcam_gallery.html`](file:///e:/CPE310FacialDermatorsisProject/data/reports/galleries/step12_gradcam_gallery.html) ([`step12_gradcam_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step12_gradcam_report.md)).
+4. ✅ **Task 7D — SCIN Domain Gap Analysis & Confidence Calibration (Step 13):** Implemented `src/calibration.py` and `scripts/analyze_scin_domain_gap.py`, reducing In-Domain Test ECE by **36.0% (`0.0197`)** while boosting Test Macro-F1 to **`0.8736`** (`92.74%` Acc, **`99.17%` Acc at 80% coverage**), and more than doubling SCIN External Test performance (**`44.51%` Acc, `0.3321` Macro-F1, `45.31%` Dermatitis recall**) via zero-leakage Symptomatic 3-Class Triage Mode ([`step13_scin_domain_gap_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step13_scin_domain_gap_report.md)).
 
 ---
 
@@ -205,9 +257,20 @@ E:\CPE310FACIALDERMATORSISPROJECT
 ├── HANDOFF_SUMMARY.md                  # Intermediate handoff log recorded after Step 4B / Task 1
 ├── datasets_links.txt                  # Origin URLs for raw datasets & Roboflow
 ├── requirements.txt                    # Project python dependencies (includes scikit-learn>=1.4)
+├── tasks/                              # Elephant & Goldfish task plans and handoff specs
+│   ├── TASK7_MASTER_PLAN.md            # Elephant master plan for Task 7 (All 4 sub-tasks complete)
+│   ├── task_7a_efficientnet_b0.md      # Completed Task 7A Goldfish spec
+│   ├── task_7a_handoff_report.md       # Completed Task 7A Goldfish report
+│   ├── task_7b_model_ensemble.md       # Completed Task 7B Goldfish spec
+│   ├── task_7c_gradcam_explainability.md # Completed Task 7C Goldfish spec
+│   ├── task_7c_handoff_report.md       # Completed Task 7C Goldfish report
+│   ├── task_7d_scin_domain_analysis.md # Completed Task 7D Goldfish spec
+│   └── task_7d_handoff_report.md       # Completed Task 7D Goldfish report
 ├── checkpoints/                        # Git-ignored model weights
 │   ├── resnet50_baseline_best.pt       # Canonical best ResNet-50 baseline checkpoint
-│   └── resnet50_seed42_best.pt         # Seed 42 checkpoint
+│   ├── resnet50_seed42_best.pt         # ResNet-50 Seed 42 checkpoint
+│   ├── efficientnet_b0_baseline_best.pt# Canonical best EfficientNet-B0 checkpoint
+│   └── efficientnet_b0_seed42_best.pt  # EfficientNet-B0 Seed 42 checkpoint
 ├── data/                               # Git-ignored data directory
 │   ├── manifest/
 │   │   ├── manifest.csv                # Master image manifest (8,196 rows, 18 columns)
@@ -230,11 +293,23 @@ E:\CPE310FACIALDERMATORSISPROJECT
 │       ├── step6_deduplication_summary.md
 │       ├── step8_split_summary.md
 │       ├── step9_resnet50_baseline_report.md
+│       ├── step10_efficientnet_b0_report.md
+│       ├── step11_ensemble_report.md
+│       ├── step12_gradcam_report.md
+│       ├── step13_scin_domain_gap_report.md
+│       ├── calibration_plots/          # Reliability & SCIN domain gap decomposition plots
+│       ├── gradcam_samples/            # 16 multi-panel Grad-CAM diagnostic figures (Cohorts A-D)
 │       ├── patch_samples/              # Visual patch crop validation samples
-│       └── galleries/                  # Generated HTML review galleries
-├── runs/                               # Training run logs
-│   └── resnet50_seed42/
-│       └── training_log.csv            # Per-epoch training & validation history
+│       └── galleries/                  # Generated HTML review galleries (incl. step12_gradcam_gallery.html)
+├── runs/                               # Training & evaluation run logs
+│   ├── resnet50_seed42/
+│   │   └── training_log.csv            # ResNet-50 per-epoch training & validation history
+│   ├── efficientnet_b0_seed42/
+│   │   └── training_log.csv            # EfficientNet-B0 per-epoch training & validation history
+│   └── ensemble_seed42/
+│       ├── val_predictions.csv         # Validation set per-image ensemble & backbone probabilities
+│       ├── test_predictions.csv        # In-Domain Test per-image ensemble & backbone probabilities
+│       └── scin_predictions.csv        # SCIN External Test per-image ensemble & backbone probabilities
 ├── scripts/
 │   ├── scin_download_filtered.py       # SCIN external test set downloader
 │   ├── generate_galleries.py           # HTML review galleries generator
@@ -242,12 +317,20 @@ E:\CPE310FACIALDERMATORSISPROJECT
 │   ├── extract_patches.py              # Pre-extracts 224x224 skin patches
 │   ├── deduplicate.py                  # pHash deduplication & subject clustering
 │   ├── split_dataset.py                # 70/15/15 grouped stratified splitter
-│   └── train_baseline.py               # ResNet-50 baseline training & evaluation script
+│   ├── train_baseline.py               # Parameterized training & evaluation script (resnet50 / efficientnet_b0)
+│   ├── train_efficientnet.py           # EfficientNet-B0 runner script
+│   ├── evaluate_comparison.py          # ResNet-50 vs EfficientNet-B0 comparison benchmark
+│   ├── evaluate_ensemble.py            # Dual-backbone ensemble evaluation & weight tuning script
+│   ├── generate_gradcam.py             # Grad-CAM cohort generator & quantitative region attribution
+│   └── analyze_scin_domain_gap.py      # Post-hoc temperature scaling, Bayes prior shift & abstention analysis
 ├── src/
 │   ├── detection.py                    # MediaPipe face detection & patch extraction
 │   ├── dataset.py                      # PyTorch Dataset and DataLoader definitions
-│   ├── model.py                        # ResNet-50 model wrapper & patch aggregation
-│   ├── inference.py                    # End-to-end inference on unseen raw images
+│   ├── model.py                        # timm model wrapper & patch aggregation
+│   ├── ensemble.py                     # ResNet-50 + EfficientNet-B0 soft probability fusion ensemble
+│   ├── explainability.py               # Dual-backbone & ensemble Grad-CAM explainability engine
+│   ├── calibration.py                  # Temperature scaling, ECE/Brier, Bayes prior & abstention utilities
+│   ├── inference.py                    # End-to-end inference on unseen raw images (single & ensemble)
 │   ├── manifest.py                     # Manifest validation & schema utilities
 │   └── sources/                        # Dataset-specific ingestion loaders
 │       ├── scin.py
