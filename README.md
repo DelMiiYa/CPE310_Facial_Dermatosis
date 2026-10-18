@@ -7,7 +7,7 @@
 
 An interpretable, deep-learning classification pipeline engineered specifically to diagnose facial skin conditions from **unconstrained smartphone imagery** (both full-face selfies and macro close-ups).
 
-Developed for **CPE310** (King Mongkut's University of Technology Thonburi), this project addresses the severe **domain gap** observed between textbook clinical dermoscopy and real-world consumer smartphone cameras.
+Developed for **CPE310** (Srinakharinwirot University - SWU), this project addresses the severe **domain gap** observed between textbook clinical dermoscopy and real-world consumer smartphone cameras.
 
 ---
 
@@ -184,7 +184,7 @@ python scripts/analyze_scin_domain_gap.py
 * **MediaPipe Tasks Vision:** Face Landmarker & BlazeFace for anatomical skin cropping.
 * **timm:** PyTorch Image Models (ResNet-50, EfficientNet-B0).
 * **Google SCIN Dataset:** Crowd-sourced smartphone dermatological dataset used as external benchmark.
-* **CPE310 Facial Dermatosis Project:** Department of Computer Engineering, KMUTT.
+* **CPE310 Facial Dermatosis Project:** Department of Computer Engineering, Srinakharinwirot University (SWU).
 
 ---
 
