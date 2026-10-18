@@ -1,18 +1,18 @@
 # Project Handoff Summary: CPE310 Facial Dermatosis Classifier
 
-**Generated On:** 2026-10-18  
+**Last Updated:** 2026-10-18  
 **Repository Working Directory:** `e:\CPE310FacialDermatorsisProject`  
 **Primary Documentation:**
-- [`project_prompt.md`](file:///e:/CPE310FacialDermatorsisProject/project_prompt.md) (Master 5-phase project guidelines & constraints)
-- [`agent_guidelines.md`](file:///e:/CPE310FacialDermatorsisProject/agent_guidelines.md) (Lessons learned, domain gap prevention, anti-hallucination rules)
-- [`HANDOFF_PROMPT.md`](file:///e:/CPE310FacialDermatorsisProject/HANDOFF_PROMPT.md) (Detailed step-by-step engineering handoff and approved decisions)
-- [`Literature Survey.pdf`](file:///e:/CPE310FacialDermatorsisProject/Literature_and_Papers/Literature%20Survey.pdf) (Literature review on facial dermatosis & patch classification)
+- [`HANDOFF_PROMPT.md`](file:///e:/CPE310FacialDermatorsisProject/HANDOFF_PROMPT.md) (Authoritative engineering handoff document)
+- [`agent_guidelines.md`](file:///e:/CPE310FacialDermatorsisProject/agent_guidelines.md) (Core rules, domain gap avoidance, low-VRAM constraints)
+- [`project_prompt.md`](file:///e:/CPE310FacialDermatorsisProject/project_prompt.md) (High-level 5-phase project guidelines)
+- [`Literature Survey.pdf`](file:///e:/CPE310FacialDermatorsisProject/Literature_and_Papers/Literature%20Survey.pdf) (Clinical rationale and visual overlap of facial conditions)
 
 ---
 
-## 1. Executive Overview & Objectives
+## 1. Executive Overview & Problem Definition
 
-The goal of this project is to develop a robust, multi-class deep learning classifier for facial dermatological conditions intended to evaluate **real-world smartphone photos** (both full-face selfies and close-ups).
+The objective is to train and evaluate a robust, multi-class deep learning classifier for facial skin diseases capable of diagnosing **real-world smartphone imagery** (both full-face selfies and macro close-ups).
 
 ### Target Classes (4-Class Problem):
 1. **Acne** (Acne Vulgaris)
@@ -21,146 +21,161 @@ The goal of this project is to develop a robust, multi-class deep learning class
 4. **Normal** (Healthy facial skin control)
 
 ### Core Architectural Decisions:
-* **Patch-Based Classification + MediaPipe Face Detector:**
-  - Full-face selfie input: MediaPipe detects the face and landmarks to crop specific facial regions (forehead, nose, left cheek, right cheek, chin).
-  - Close-up input (no full face detected): Image is tiled into standard patches.
-  - Aggregation: Patch predictions are aggregated into a single diagnosis with Grad-CAM visual heatmaps.
-  - Rationale: Data is scarce; patches from both selfies and close-ups look visually similar, allowing one unified patch classifier to maximize data efficiency.
+* **Patch-Based Classifier + MediaPipe Face Detector:**
+  - **Full-face selfies (Face Detected):** MediaPipe tasks vision model detects the face and anatomical landmarks to extract 5 standardized skin crops: **forehead, nose, left cheek, right cheek, and chin**.
+  - **Macro close-ups (No Face Detected):** The image is tiled into standard $224 \times 224$ patches.
+  - **Inference Aggregation:** Predictions from all patches are aggregated via mean-probability pooling to produce a case-level diagnosis and Grad-CAM heatmap.
+  - **Rationale:** Smartphone photos vary widely between zoomed-in lesions and full selfies. Decomposing both into skin patches standardizes the input domain and maximizes training data efficiency.
 * **Hardware Profile & Optimizations:**
-  - Local GPU: **NVIDIA GeForce RTX 3050 Laptop GPU (4 GB VRAM)** running on Windows with Python 3.13 and PyTorch 2.6 (`+cu124`).
-  - Mixed precision training (`torch.amp.autocast`) is mandatory.
-  - Batch sizes: 16–32 to avoid Out-Of-Memory (OOM) exceptions.
-  - DataLoaders: `pin_memory=True`, `persistent_workers=True`, `num_workers=4`.
+  - Hardware: **NVIDIA GeForce RTX 3050 Laptop GPU (4 GB VRAM)** on Windows with Python 3.13 and PyTorch 2.6 (`+cu124`).
+  - Mixed precision training (`torch.amp.autocast('cuda')`) is strictly enforced.
+  - VRAM footprint maintained between **1.2 GB and 3.1 GB** with batch size 32.
+  - DataLoaders configured with `pin_memory=True`, `persistent_workers=True`, and `num_workers=4`.
 
 ---
 
-## 2. Critical Lessons Learned & Approved Decisions
+## 2. Hard Engineering Rules & Lessons Learned
 
-1. **The Domain Gap Rule (CRITICAL LESSON FROM V1):**
-   - In v1, training on DermNet clinical macro-lens photos achieved 95% accuracy on clinical test sets but **completely failed (predicted "Normal") on real smartphone selfies**.
-   - **Hard Rule:** All training data must visually match production smartphone photos. Clinical textbook photography (e.g. DermNet) is strictly prohibited from training.
+1. **The Domain Gap Rule (Lesson from v1):**
+   - In v1, training on DermNet clinical macro-lens photos achieved 95% test accuracy on clinical sets but **failed completely (predicted "Normal") on real user selfies**.
+   - **Rule:** Training data must strictly represent smartphone camera capture. Textbook clinical imagery (DermNet) is strictly excluded from training.
 2. **SCIN is Strictly the External Test Set:**
-   - Google SCIN dataset cases are held out exclusively as an **unseen external test benchmark**. SCIN data is **never** used for training, validation, or hyperparameter tuning.
-3. **Manifest Single Source of Truth (`data/manifest/manifest.csv`):**
-   - All dataset metadata is tracked in a unified CSV manifest pointing to existing files. Raw images remain untouched in `data/raw/` (no file copying or duplicate folders).
-4. **Legacy Deprecation:**
-   - Previous prototype scripts `download_data.py`, `filter_and_dedup.py`, and the folder `data/processed/` are **deprecated legacy** and must not be used.
+   - Google SCIN dataset (crowd-sourced smartphone photos) is held out exclusively as an **unseen external benchmark** (337 images / 149 cases). SCIN data is **never** used for training, validation, or hyperparameter tuning.
+3. **Unified Manifest as Single Source of Truth (`data/manifest/manifest.csv`):**
+   - Raw images remain completely untouched in `data/raw/`. All metadata, crops, hashes, labels, and split assignments are tracked in the manifest.
+4. **Legacy Script Deprecation:**
+   - Old prototype scripts (`download_data.py`, `filter_and_dedup.py`) and folder `data/processed/` are **deprecated legacy** and must not be used.
 
 ---
 
-## 3. Work Completed to Date
+## 3. Work Completed to Date (Phases 1–4)
 
-### Step 4A: Manifest Infrastructure & SCIN External Test Set
-* Implemented [`src/manifest.py`](file:///e:/CPE310FacialDermatorsisProject/src/manifest.py) with schema validation, uniqueness constraints, and safe append operations.
-  - Schema: `image_id, source, subject_id, path, orig_label, label, label_confidence, body_part, shot_type, fst, role, phash, face_detected, review_status, split`.
-* Implemented [`scripts/scin_download_filtered.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/scin_download_filtered.py):
-  - Filtered SCIN cases for facial lesions (`body_parts_head_or_neck == YES`) for Acne, Rosacea, and Dermatitis with dermatologist weighted label $\ge 0.5$.
-  - Downloaded **337 verified facial images** directly to `data/raw/scin/dataset/images/` tagged as `role=external_test`.
+### Step 4A & 4B: Dataset Ingestion & Sourcing (Commits `81cabee`, `a51b601`, `970fa5a`)
+* **Unified Manifest:** Created [`src/manifest.py`](file:///e:/CPE310FacialDermatorsisProject/src/manifest.py) schema (15 columns).
+* **SCIN External Test Set:** Created [`scripts/scin_download_filtered.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/scin_download_filtered.py) to download 337 qualifying facial images (weighted label $\ge 0.5$) to `data/raw/scin/dataset/images/`.
+* **Local Train Sourcing:**
+  - `iga34`: 686 genuine acne selfies across 229 subjects.
+  - `skin_defects`: 27 acne selfies across 10 subjects.
+  - `roboflow_rosacea`: 1,116 images downloaded; collapsed down to **616 distinct original photos** (444 augmented duplicates rejected).
+  - `roboflow_face_skin`: 241 distinct phone images (Acne: 100, Rosacea: 48, Dermatitis: 93).
+  - `skin_assessment`: Inspected and found to be repackaged DermNet (`07rosacea...`, `03eczema...`). **Acne, Rosacea, and Dermatitis were rejected** to prevent domain contamination. Only **644 verified Normal faces** were accepted.
+  - `yolo_acne`: 927 surplus augmented copies rejected.
 
-### Step 4B: Local Train Pool Inventory (Read-Only Loaders)
-Implemented modular loaders under `src/sources/` registering raw local images into `data/manifest/manifest.csv` (`role=train_pool`):
-* [`src/sources/iga34.py`](file:///e:/CPE310FacialDermatorsisProject/src/sources/iga34.py): 687 genuine smartphone selfies across 229 subjects (`subject_id = person_id`).
-* [`src/sources/yolo_acne.py`](file:///e:/CPE310FacialDermatorsisProject/src/sources/yolo_acne.py): 927 acne images/crops.
-* [`src/sources/skin_defects.py`](file:///e:/CPE310FacialDermatorsisProject/src/sources/skin_defects.py): 30 acne selfies across 10 subjects (front/left/right angles).
-* [`src/sources/skin_assessment.py`](file:///e:/CPE310FacialDermatorsisProject/src/sources/skin_assessment.py): 4,828 candidate images across acne, Rosacea, Eczema, and normal.
+### Step 5: MediaPipe Face Detection & Patch Extraction (Commit `0583a56`)
+* Implemented [`src/detection.py`](file:///e:/CPE310FacialDermatorsisProject/src/detection.py) and [`scripts/run_face_detection.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/run_face_detection.py) using MediaPipe Tasks Vision (`blaze_face_short_range.tflite` + `face_landmarker.task`).
+* Evaluated all 8,196 manifest images: 2,827 face-detected (34.5%), 5,369 close-ups/non-face (65.5%).
+* Pre-extracted **14,330 patches** ($224 \times 224$) to `data/processed/patches/` with [`data/manifest/patches_manifest.csv`](file:///e:/CPE310FacialDermatorsisProject/data/manifest/patches_manifest.csv).
+* Report: [`data/reports/step5_face_detection_summary.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step5_face_detection_summary.md).
 
-### Step 4C: Visual Review Galleries & User Audit Findings
-* Created [`scripts/generate_galleries.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/generate_galleries.py) generating HTML contact sheets for each source $\times$ class in `data/reports/galleries/`.
-* **User Manual Audit Results:**
-  1. **Label Accuracy:** Visual inspection confirmed class labels are accurate.
-  2. **Non-Face Images Identified:** `scin - Dermatitis`, `skin_assessment - Dermatitis`, and `skin_assessment - Normal` contain non-facial body images (arms, legs, hands, torso). MediaPipe face filtering (Step 5) is required to eliminate them.
-  3. **Critical Discovery on `skin_assessment`:** Filename examination revealed `skin_assessment` Rosacea and Dermatitis images are repackaged **DermNet** clinical photos (`07rosacea...`, `03eczema...`). Training on them would trigger the exact domain gap from v1.
-  4. **The Rosacea Gap:** We have plenty of selfie data for Acne (~1,644 images), but zero verified smartphone selfies for Rosacea in the training pool.
+### Step 6: Perceptual Deduplication & Leakage Prevention (Commit `cf4d50c`)
+* Implemented [`scripts/deduplicate.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/deduplicate.py) using 64-bit canonical & horizontally-flipped perceptual hashes (`imagehash.phash`, Hamming distance $\le 6\text{--}8$).
+* **SCIN External Test Leakage Check:** **0 leaks** found (zero overlap between training pool and SCIN test set).
+* Resolved 3 cross-dataset label conflicts and assigned unified `subject_id`s across all images.
+* Report: [`data/reports/step6_deduplication_summary.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step6_deduplication_summary.md).
 
-### Sourcing & Roboflow Setup:
-* Securely stored the user-provided Roboflow API key in `.env` (git-ignored, updated `.gitignore`).
-* Installed `roboflow` SDK (1.7.1). Verified CUDA with PyTorch 2.6 on RTX 3050.
-* User added dedicated Roboflow Rosacea dataset link to line 9 of [`datasets_links.txt`](file:///e:/CPE310FacialDermatorsisProject/datasets_links.txt):
-  `https://universe.roboflow.com/skin-face-ixq7s/rosacea-n6xhv-jnjno/`
-* In addition, project `facial-skin-diseases` was forked into the user's Roboflow workspace as `d3l-m11/face-skin-diseases-bbveb` (498 raw images).
+### Step 7: Manual Review & Training Pool Audit
+* Approved clean curated training pool of **2,214 images** across 1,491 subjects:
+  - **Acne:** 813 images (330 subjects)
+  - **Rosacea:** 664 images (664 subjects)
+  - **Normal:** 644 images (404 subjects)
+  - **Dermatitis:** 93 images (93 subjects)
 
----
+### Step 8: Grouped Stratified 70/15/15 Split (Commit `6456e99`)
+* Implemented [`scripts/split_dataset.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/split_dataset.py):
+  - Stratified by class and **strictly grouped by `subject_id`** (zero subject leakage across splits).
+  - **Train Split (70%):** 1,617 images / 1,047 subjects (Acne: 591, Rosacea: 466, Normal: 497, Dermatitis: 63)
+  - **Validation Split (15%):** 294 images / 222 subjects (Acne: 109, Rosacea: 99, Normal: 71, Dermatitis: 15)
+  - **In-Domain Test Split (15%):** 303 images / 222 subjects (Acne: 113, Rosacea: 99, Normal: 76, Dermatitis: 15)
+  - **SCIN External Test Set:** 337 images / 149 cases (Acne: 58, Rosacea: 34, Dermatitis: 245)
+* Report: [`data/reports/step8_split_summary.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step8_split_summary.md).
 
-## 4. Current Dataset Inventory Status
-
-| Class | Total Manifest Count | Genuine Smartphone Count | Quality / Domain Assessment | Status |
-| :--- | :---: | :---: | :--- | :--- |
-| **Acne** | 2,829 | **~1,644** | `iga34` (687) + `yolo_acne` (927) + `skin_defects` (30) are genuine smartphone photos. | ✅ **Ready** |
-| **Rosacea** | 1,211 | **0** | `skin_assessment` is 100% DermNet clinical imagery. Need real phone photos. | 🚨 **Target of Current Sourcing** |
-| **Dermatitis** | 1,192 | **< 50** | `skin_assessment` is DermNet + body parts (arms/legs). | ⚠️ **Needs Filtering & Augmentation** |
-| **Normal** | 1,240 | **~200** | Contains celebrity face crops and skin patches; easily augmented with FFHQ/selfies. | 🟡 **Manageable** |
-| **External Test (SCIN)** | **337** | **337** | Real patient submissions (Acne: 58, Dermatitis: 245, Rosacea: 34). Locked holdout test set. | 🔒 **Locked** |
-
----
-
-## 5. Next Immediate Implementation Steps
-
-When resuming work, follow these sequential steps:
-
-### Task 1: Ingest Roboflow Rosacea Dataset (Resolve the Rosacea Gap)
-* Target dataset: `skin-face-ixq7s/rosacea-n6xhv-jnjno` from [`datasets_links.txt`](file:///e:/CPE310FacialDermatorsisProject/datasets_links.txt) (or user workspace `d3l-m11/face-skin-diseases-bbveb`).
-* Download high-resolution / unaugmented images to `data/raw/roboflow-rosacea/` using `ROBOFLOW_API_KEY` from `.env`.
-* Create `src/sources/roboflow_rosacea.py` to register images in `data/manifest/manifest.csv` as `label=Rosacea`, `role=train_pool`.
-* Generate review thumbnails to verify domain match.
-
-### Task 2: Step 5 — MediaPipe Face Detection & Patch Extraction
-* Implement `src/detection.py` and `scripts/run_face_detection.py`:
-  - Run MediaPipe face detector over all manifest images to populate `face_detected` boolean.
-  - Automatically reject non-face images (arms, hands, legs) from the training pool.
-  - For selfies (`face_detected == True`): crop landmark-based facial patches (forehead, left cheek, right cheek, nose, chin).
-  - For close-ups: tile into $224 \times 224$ patches.
-
-### Task 3: Step 6 — Perceptual Hash Deduplication
-* Implement `scripts/deduplicate.py` using `imagehash.phash`.
-* Deduplicate across ALL sources with Hamming distance threshold $\le 6\text{--}8$.
-* **Critical Rule:** Deduplication must run **before** dataset splitting to prevent data leakage between train, val, and test.
-
-### Task 4: Step 7 — Manual Review Pause (⏸ STOP Point)
-* Present sample cropped patches and deduplication metrics to the user for review and approval.
-
-### Task 5: Step 8 & 9 — Stratified Split & ResNet-50 Baseline
-* Execute 70/15/15 train/val/test split grouped by `subject_id` to ensure no person's photos cross split boundaries. SCIN remains pure external test.
-* Train ResNet-50 baseline using class-weighted cross-entropy and mixed precision (`torch.amp.autocast`), evaluated on Macro-F1 across 3 random seeds with Grad-CAM explainability.
+### Step 9: ResNet-50 Baseline Training & Evaluation (Commit `5af89f7`)
+* Built modular PyTorch training pipeline:
+  - Dataset loader: [`src/dataset.py`](file:///e:/CPE310FacialDermatorsisProject/src/dataset.py)
+  - Model wrapper: [`src/model.py`](file:///e:/CPE310FacialDermatorsisProject/src/model.py)
+  - Training script: [`scripts/train_baseline.py`](file:///e:/CPE310FacialDermatorsisProject/scripts/train_baseline.py)
+  - Full inference pipeline: [`src/inference.py`](file:///e:/CPE310FacialDermatorsisProject/src/inference.py)
+* **Optimization Setup:** Pretrained ImageNet-1k `resnet50`, inverse-frequency class-weighted Cross-Entropy loss ($w_c = [0.6945, 0.8415, 5.0731, 0.8513]$), AdamW optimizer, cosine annealing schedule, mixed precision AMP.
+* **Best Model Checkpoint:** `checkpoints/resnet50_baseline_best.pt` (Epoch 11).
+* **Performance Summary:**
+  - **In-Domain Test (303 images):**
+    - **Macro-F1:** **0.8841** | **Overall Accuracy:** **92.74%**
+    - Per-Class F1: Acne **0.9412**, Rosacea **0.9091**, Dermatitis **0.7059** (12/15 detected), Normal **0.9804** (75/76 detected).
+  - **SCIN Held-Out External Test (337 images):**
+    - Macro-F1: 0.1544 | Overall Accuracy: 21.66%
+    - Acne Recall: **91.38%** (53/58 detected).
+    - Dermatitis Recall: 5.31% (heavily confused as Acne due to crowd-sourced close-up domain gap).
+    - Fitzpatrick Skin Type Breakdown: FST4 (31.6%) and FST5 (36.0%) accuracy exceeded lighter tones.
+* Report: [`data/reports/step9_resnet50_baseline_report.md`](file:///e:/CPE310FacialDermatorsisProject/data/reports/step9_resnet50_baseline_report.md).
 
 ---
 
-## 6. Repository File & Directory Map
+## 4. Current Project State & Immediate Next Steps (Task 7)
+
+> [!IMPORTANT]
+> **Current Milestone:** Step 9 (ResNet-50 Baseline) is fully completed and verified. The codebase is clean on git commit `5af89f7` (and latest documentation commits).
+
+### Upcoming Work (Task 7: Advanced Architectures, Ensemble & Explainability):
+1. **EfficientNet-B0 Model:** Train EfficientNet-B0 on identical data folds, patches, and class weights to evaluate efficiency vs. ResNet-50.
+2. **Model Ensemble:** Implement a weighted voting / probability average ensemble combining ResNet-50 and EfficientNet-B0 (fulfilling literature survey requirements).
+3. **Grad-CAM Interpretability:** Generate visual heatmaps across both anatomical face patches and close-up tiles to verify that models focus on genuine lesion pathology.
+4. **SCIN Domain Adaptation & Error Analysis:** Investigate strategies to improve Dermatitis sensitivity on crowd-sourced close-up photography.
+
+---
+
+## 5. Repository Structure Map
 
 ```
 E:\CPE310FACIALDERMATORSISPROJECT
 ├── .env                                # Private API keys (git-ignored)
 ├── .gitignore                          # Ignores data/, .env, runs/, checkpoints/
 ├── agent_guidelines.md                 # Core engineering rules & domain shift guidelines
-├── project_prompt.md                   # 5-phase master project instructions
-├── HANDOFF_PROMPT.md                   # Complete assistant-to-assistant handoff prompt
-├── Project_handoff_summary.md          # This up-to-date summary document
+├── project_prompt.md                   # Master 5-phase project guidelines
+├── HANDOFF_PROMPT.md                   # Authoritative full engineering handoff document
+├── Project_handoff_summary.md          # Comprehensive executive summary (this document)
 ├── datasets_links.txt                  # Origin URLs for raw datasets & Roboflow
 ├── requirements.txt                    # Project python dependencies
+├── checkpoints/
+│   └── resnet50_baseline_best.pt       # Trained ResNet-50 baseline checkpoint
 ├── data/
 │   ├── manifest/
-│   │   └── manifest.csv                # Single source of truth (6,809 registered images)
-│   ├── raw/                            # Untouched raw dataset directories
+│   │   ├── manifest.csv                # Master image manifest (8,196 rows)
+│   │   └── patches_manifest.csv        # Extracted patches manifest (14,330 patches)
+│   ├── processed/
+│   │   └── patches/                    # Pre-extracted 224x224 training patches
+│   ├── raw/                            # Untouched raw dataset folders
 │   │   ├── acne-dataset-in-yolov8-format/
-│   │   ├── scin/dataset/images/        # 337 downloaded SCIN external test images
+│   │   ├── roboflow-face-skin/
+│   │   ├── roboflow-rosacea/
+│   │   ├── scin/dataset/images/        # 337 SCIN external test images
 │   │   ├── skin-assessment-dataset/
 │   │   ├── skin-defects-acne-redness-and-bags-under-the-eyes/
 │   │   └── skin-problems-34-on-the-iga-scale/
 │   └── reports/
-│       ├── scin_explore.md             # SCIN exploratory analysis report
-│       └── galleries/                  # Generated HTML review contact sheets
+│       ├── step5_face_detection_summary.md
+│       ├── step6_deduplication_summary.md
+│       ├── step8_split_summary.md
+│       └── step9_resnet50_baseline_report.md
 ├── scripts/
-│   ├── scin_fetch_metadata.py          # Downloads SCIN cases & labels metadata
-│   ├── scin_explore.py                 # Generates SCIN exploratory analysis report
-│   ├── scin_download_filtered.py       # Filters & downloads SCIN facial test set
-│   └── generate_galleries.py           # Generates HTML review galleries
-├── src/
-│   ├── manifest.py                     # Manifest schema, validation & append helpers
-│   └── sources/
-│       ├── scin.py                     # SCIN data parser & label grouping
-│       ├── iga34.py                    # IGA34 acne selfie loader
-│       ├── yolo_acne.py                # YOLO acne dataset loader
-│       ├── skin_assessment.py          # Skin assessment dataset loader
-│       └── skin_defects.py             # Skin defects selfie loader
-└── Literature_and_Papers/
-    └── Literature Survey.pdf           # Literature survey & comparative analysis
+│   ├── scin_download_filtered.py       # SCIN external test set downloader
+│   ├── generate_galleries.py           # HTML review galleries generator
+│   ├── run_face_detection.py           # MediaPipe face detector script
+│   ├── extract_patches.py              # Pre-extracts 224x224 skin patches
+│   ├── deduplicate.py                  # pHash deduplication & subject clustering
+│   ├── split_dataset.py                # 70/15/15 grouped stratified splitter
+│   └── train_baseline.py               # ResNet-50 baseline training script
+└── src/
+    ├── detection.py                    # MediaPipe face detection & patch extraction
+    ├── dataset.py                      # PyTorch Dataset and DataLoader definitions
+    ├── model.py                        # ResNet-50 model wrapper & patch aggregation
+    ├── inference.py                    # End-to-end inference on unseen raw images
+    ├── manifest.py                     # Manifest validation & schema utilities
+    └── sources/                        # Dataset-specific ingestion loaders
+        ├── scin.py
+        ├── iga34.py
+        ├── yolo_acne.py
+        ├── skin_assessment.py
+        ├── skin_defects.py
+        ├── roboflow_rosacea.py
+        └── roboflow_face_skin.py
 ```
