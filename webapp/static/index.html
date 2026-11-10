@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DermaScan Face AI — Facial Dermatosis Classifier</title>
+  
+  <!-- Google Fonts: Inter & Sarabun / Noto Sans Thai -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+</head>
+<body>
+  <!-- Global Top Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="header-brand">
+        <img src="logo.svg" alt="DermaScan Face AI Logo" class="brand-logo" width="48" height="48">
+        <div class="brand-titles">
+          <h1 class="system-title"><span id="system-name">DermaScan Face AI</span></h1>
+          <p class="system-subtitle" id="system-subtitle" data-i18n="system_subtitle">CPE310 Healthcare AI System — Calibrated Dual-Backbone Facial Dermatosis Classifier</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="lang-toggle-btn" class="lang-toggle-btn" aria-label="Switch Language / เปลี่ยนภาษา">
+          <span class="lang-icon">🌐</span>
+          <span id="lang-label" class="lang-label">ไทย (TH)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Always-Visible Medical & Privacy Banner -->
+  <div class="medical-privacy-bar" role="region" aria-label="Medical Disclaimer & Privacy Notice">
+    <div class="bar-container">
+      <div class="bar-item">
+        <span class="bar-icon">⚠️</span>
+        <span id="banner-disclaimer-text" data-i18n="banner_disclaimer">
+          <strong>Educational university demonstration only</strong> — NOT a clinical diagnostic device. Do not use for clinical decision-making. Please consult a qualified dermatologist.
+        </span>
+      </div>
+      <div class="bar-item privacy-item">
+        <span class="bar-icon">🔒</span>
+        <span id="banner-privacy-text" data-i18n="banner_privacy">
+          <strong>Strict Privacy Guarantee:</strong> Uploaded photos are processed strictly in memory and never saved to disk or persistent storage.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Container -->
+  <main class="main-content">
+    <div class="content-grid">
+      
+      <!-- Left Column: Upload & Options Panel -->
+      <section class="panel upload-panel" id="upload-panel" aria-labelledby="upload-panel-title">
+        <div class="panel-header">
+          <h2 id="upload-panel-title" class="panel-title" data-i18n="upload_title">Photo Input & Analysis</h2>
+          <span class="panel-badge" data-i18n="upload_badge">In-Memory</span>
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="File upload dropzone">
+          <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" capture="user" class="visually-hidden">
+          <div class="drop-zone-prompt" id="drop-zone-prompt">
+            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <p class="drop-primary-text" data-i18n="drop_primary">Drag and drop a face photo here, or <strong>browse files</strong></p>
+            <p class="drop-secondary-text" data-i18n="drop_secondary">Supports JPG, PNG, WEBP (Maximum 10 MB)</p>
+          </div>
+        </div>
+
+        <!-- Photo Preview Area (Hidden initially) -->
+        <div id="photo-preview-card" class="photo-preview-card hidden">
+          <div class="preview-img-wrapper">
+            <img id="preview-image" alt="Selected photo preview" class="preview-thumbnail">
+          </div>
+          <div class="preview-meta">
+            <span id="preview-filename" class="preview-filename">photo.jpg</span>
+            <span id="preview-filesize" class="preview-filesize">0 KB</span>
+            <button type="button" id="clear-photo-btn" class="btn btn-outline btn-sm" data-i18n="btn_clear_photo">Change / Clear Photo</button>
+          </div>
+        </div>
+
+        <!-- Diagnostic Options -->
+        <div class="options-box">
+          <label class="checkbox-container" for="triage-mode-toggle">
+            <input type="checkbox" id="triage-mode-toggle">
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label-text">
+              <strong data-i18n="triage_title">Symptomatic 3-Class Triage Mode</strong>
+              <small data-i18n="triage_desc">Excludes Normal class via Bayesian prior adjustment for known symptomatic lesions</small>
+            </span>
+          </label>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button type="button" id="analyze-btn" class="btn btn-primary btn-block" disabled>
+            <span id="analyze-spinner" class="spinner hidden" aria-hidden="true"></span>
+            <span id="analyze-btn-text" data-i18n="btn_analyze">Analyze Photo</span>
+          </button>
+          <button type="button" id="mock-btn" class="btn btn-secondary btn-block">
+            <span class="btn-icon">⚡</span>
+            <span id="mock-btn-text" data-i18n="btn_mock">Load Demo Preview (Mock)</span>
+          </button>
+        </div>
+
+        <!-- Friendly Error Banner -->
+        <div id="error-banner" class="alert-box alert-danger hidden" role="alert" aria-live="assertive">
+          <div class="alert-header">
+            <span class="error-badge" id="error-code-badge">ERROR</span>
+            <strong class="alert-title" data-i18n="error_title">Analysis Request Failed</strong>
+          </div>
+          <div id="error-message-text" class="alert-body">An unexpected error occurred. Please try again.</div>
+        </div>
+      </section>
+
+      <!-- Right Column: Results Panel (Hidden until analysis runs) -->
+      <section class="panel results-panel hidden" id="results-panel" aria-labelledby="results-panel-title">
+        <div class="panel-header">
+          <h2 id="results-panel-title" class="panel-title" data-i18n="results_title">Diagnostic Analysis Results</h2>
+          <span id="latency-badge" class="badge badge-teal">-- ms</span>
+        </div>
+
+        <!-- Abstention Banner (Shown when abstained === true) -->
+        <div id="abstention-banner" class="alert-box alert-warning hidden" role="alert">
+          <div class="warning-icon-wrapper">⚠️</div>
+          <div class="warning-content">
+            <h3 class="warning-heading" id="abstention-heading" data-i18n="abstention_heading">Uncertain — Please Consult a Dermatologist</h3>
+            <p id="abstention-message" class="warning-text"></p>
+            <div id="abstention-top2-box" class="top2-candidates-box">
+              <span class="top2-label" data-i18n="top2_label">Top Candidate Conditions:</span>
+              <span id="abstention-top2-tags" class="top2-tags"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Prediction Card -->
+        <div class="card prediction-card" id="primary-prediction-card">
+          <div class="prediction-header">
+            <div>
+              <span class="prediction-match-lead" id="prediction-match-lead" data-i18n="match_lead">The model's best match is:</span>
+              <div class="prediction-title-group">
+                <span id="prediction-badge" class="prediction-badge badge-rosacea">Rosacea</span>
+                <span id="prediction-confidence" class="prediction-confidence">91.24%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Mode & Patch Details -->
+          <div id="input-mode-badge" class="input-mode-info">
+            <span class="mode-icon">🎯</span>
+            <span id="input-mode-text">Full-face selfie detected: 5 anatomical regions analysed</span>
+          </div>
+
+          <!-- Caution Note Callout (Shown when caution_note is not null) -->
+          <div id="caution-note-box" class="alert-box alert-caution hidden">
+            <span class="caution-icon">ℹ️</span>
+            <span id="caution-note-text" class="caution-text"></span>
+          </div>
+        </div>
+
+        <!-- 4-Class Probability Bars -->
+        <div class="card probability-card">
+          <div class="card-header-row">
+            <h3 class="card-subtitle" data-i18n="prob_heading">Class Probabilities (Calibrated Dual-Backbone)</h3>
+            <span class="threshold-indicator" id="threshold-indicator-tag" title="Selective Abstention Threshold">
+              <span class="threshold-dot"></span>
+              <span id="threshold-label-text">Abstention Threshold: 78.5%</span>
+            </span>
+          </div>
+          <div id="probability-bars" class="probability-bars-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Visual Explainability: Grad-CAM Overlay & Region Breakdown -->
+        <div class="card explainability-card">
+          <div class="card-header-row">
+            <div>
+              <h3 class="card-subtitle" data-i18n="explain_heading">Visual Explainability & Grad-CAM Heatmap</h3>
+              <p class="card-caption" data-i18n="explain_caption">Saliency attention map fusing ResNet-50 (layer4) and EfficientNet-B0 (conv_head)</p>
+            </div>
+            
+            <!-- Segmented View Toggle Buttons -->
+            <div class="segmented-control" role="group" aria-label="Visual display mode">
+              <button type="button" class="seg-btn active" id="btn-view-gradcam" data-view="gradcam" data-i18n="btn_gradcam">Grad-CAM Heatmap</button>
+              <button type="button" class="seg-btn" id="btn-view-original" data-view="original" data-i18n="btn_original">Original Image</button>
+              <button type="button" class="seg-btn" id="btn-view-sidebyside" data-view="sidebyside" data-i18n="btn_sidebyside">Side-by-Side</button>
+            </div>
+          </div>
+
+          <!-- Image Display Frames -->
+          <div id="image-viewer-container" class="image-viewer-container mode-gradcam">
+            <!-- Single Mode Frame -->
+            <div id="frame-single" class="viewer-frame frame-single">
+              <img id="viewer-img-single" alt="Visual Explainability Heatmap" class="viewer-img">
+            </div>
+            <!-- Side-by-Side Mode Frame -->
+            <div id="frame-split" class="viewer-split hidden">
+              <div class="split-col">
+                <span class="split-label" data-i18n="split_orig">Original Photo</span>
+                <img id="viewer-img-orig" alt="Original Photo" class="viewer-img">
+              </div>
+              <div class="split-col">
+                <span class="split-label" data-i18n="split_cam">Grad-CAM Saliency</span>
+                <img id="viewer-img-cam" alt="Grad-CAM Saliency Heatmap" class="viewer-img">
+              </div>
+            </div>
+          </div>
+
+          <!-- Per-Region Probability Table (Shown in face mode) -->
+          <div id="region-table-container" class="region-table-container">
+            <h4 class="table-subheading" data-i18n="region_table_heading">Anatomical Region Probability Breakdown</h4>
+            <div class="table-responsive">
+              <table class="region-table" id="region-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-i18n="th_region">Region</th>
+                    <th scope="col" data-i18n="th_top_match">Top Match</th>
+                    <th scope="col">Acne</th>
+                    <th scope="col">Rosacea</th>
+                    <th scope="col">Dermatitis</th>
+                    <th scope="col">Normal</th>
+                  </tr>
+                </thead>
+                <tbody id="region-table-body">
+                  <!-- Dynamically populated 5 rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsible Model Ensemble Breakdown -->
+        <details class="card collapsible-card" id="model-breakdown-card" open>
+          <summary class="collapsible-summary">
+            <div class="summary-title-wrap">
+              <h3 class="card-subtitle" data-i18n="ensemble_heading">Dual-Backbone Ensemble Breakdown</h3>
+              <span id="models-agree-badge" class="badge badge-success">Models Agree</span>
+            </div>
+            <span class="summary-chevron">▼</span>
+          </summary>
+          <div class="collapsible-body">
+            <div class="ensemble-comparison-grid">
+              <!-- ResNet-50 Card -->
+              <div class="model-mini-card">
+                <div class="model-mini-header">
+                  <strong>ResNet-50</strong>
+                  <span class="model-param-tag">23.52M params • T=0.60, w=0.40</span>
+                </div>
+                <div class="model-mini-pred">
+                  <span class="model-pred-name" id="resnet-pred-name">--</span>
+                  <span class="model-pred-conf" id="resnet-pred-conf">--%</span>
+                </div>
+                <div class="model-mini-probs" id="resnet-probs-list"></div>
+              </div>
+
+              <!-- EfficientNet-B0 Card -->
+              <div class="model-mini-card">
+                <div class="model-mini-header">
+                  <strong>EfficientNet-B0</strong>
+                  <span class="model-param-tag">4.01M params • T=1.20, w=0.60</span>
+                </div>
+                <div class="model-mini-pred">
+                  <span class="model-pred-name" id="effnet-pred-name">--</span>
+                  <span class="model-pred-conf" id="effnet-pred-conf">--%</span>
+                </div>
+                <div class="model-mini-probs" id="effnet-probs-list"></div>
+              </div>
+
+              <!-- Calibrated Ensemble Card -->
+              <div class="model-mini-card model-mini-card-highlight">
+                <div class="model-mini-header">
+                  <strong>Calibrated Fusion</strong>
+                  <span class="model-param-tag">Soft Weighted Average</span>
+                </div>
+                <div class="model-mini-pred">
+                  <span class="model-pred-name" id="ensemble-pred-name">--</span>
+                  <span class="model-pred-conf" id="ensemble-pred-conf">--%</span>
+                </div>
+                <div class="model-mini-probs" id="ensemble-probs-list"></div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Condition Educational Information Card -->
+        <div class="card info-card" id="condition-info-card">
+          <div class="info-card-header">
+            <span class="info-tag" data-i18n="info_tag">Clinical Knowledge Base</span>
+            <h3 class="condition-name" id="info-condition-name">Rosacea</h3>
+            <p class="condition-match-phrase" id="info-match-phrase"></p>
+            <p class="condition-desc" id="info-short-desc"></p>
+          </div>
+
+          <div class="info-sections">
+            <!-- 1. Typical Symptoms -->
+            <div class="info-block">
+              <h4 class="info-block-title" data-i18n="info_symptoms_title">Typical Symptoms & Clinical Signs</h4>
+              <ul class="info-list" id="info-symptoms-list"></ul>
+            </div>
+
+            <!-- 2. Anatomical Distribution (Linked to Grad-CAM) -->
+            <div class="info-block info-highlight-box">
+              <h4 class="info-block-title" data-i18n="info_distribution_title">Facial Distribution & Grad-CAM Correlation</h4>
+              <p class="info-distribution-text" id="info-distribution-text"></p>
+            </div>
+
+            <!-- 3. Common Triggers & Contributing Factors -->
+            <div class="info-block">
+              <h4 class="info-block-title" data-i18n="info_triggers_title">Common Triggers & Aggravating Factors</h4>
+              <ul class="info-list" id="info-triggers-list"></ul>
+            </div>
+
+            <!-- 4. Commonly Confused With (Differential Diagnosis) -->
+            <div class="info-block">
+              <h4 class="info-block-title" data-i18n="info_confused_title">Commonly Confused Conditions (Differential Diagnosis)</h4>
+              <div class="differential-list" id="info-confused-list"></div>
+            </div>
+
+            <!-- 5. General Care Tips -->
+            <div class="info-block">
+              <h4 class="info-block-title" data-i18n="info_care_title">General Skin Care Tips (Conservative)</h4>
+              <ul class="info-list" id="info-care-list"></ul>
+            </div>
+
+            <!-- 6. See a Doctor If (Red Flags) -->
+            <div class="info-block info-doctor-box">
+              <h4 class="info-block-title doctor-title" data-i18n="info_doctor_title">When to See a Doctor or Dermatologist</h4>
+              <ul class="info-list doctor-list" id="info-doctor-list"></ul>
+            </div>
+
+            <!-- 7. Reputable Medical Sources -->
+            <div class="info-block info-sources-block">
+              <h4 class="info-block-title" data-i18n="info_sources_title">Reputable Dermatology References</h4>
+              <div class="sources-links" id="info-sources-list"></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- Full-Width Bottom Section: Model Architecture & Limitations Panel -->
+    <section class="limitations-section">
+      <details class="card limitations-details" id="limitations-panel">
+        <summary class="limitations-summary">
+          <div class="limitations-summary-title">
+            <span class="info-icon">📊</span>
+            <strong data-i18n="limitations_title">Model Architecture, Validation Benchmarks & Honest Known Limitations</strong>
+          </div>
+          <span class="summary-chevron">▼</span>
+        </summary>
+        <div class="limitations-body">
+          <div class="limitations-grid">
+            
+            <!-- Column 1: Model Architecture & Dataset -->
+            <div class="limitations-col">
+              <h4 class="limitations-col-title" data-i18n="arch_title">Architecture & Dataset</h4>
+              <ul class="metrics-list">
+                <li>
+                  <strong>Input Processing:</strong> MediaPipe Face Detector (Tasks Vision `blaze_face_short_range.tflite`) & 478-landmark landmarker (`face_landmarker.task`) extracting 5 standardized anatomical regions (Forehead, Nose, Left Cheek, Right Cheek, Chin at 224x224). Macro close-ups tiled into 1–9 patches.
+                </li>
+                <li>
+                  <strong>Dual Backbone:</strong> ResNet-50 (23.52M parameters, checkpoint `resnet50_baseline_best.pt`) + EfficientNet-B0 (4.01M parameters, checkpoint `efficientnet_b0_baseline_best.pt`).
+                </li>
+                <li>
+                  <strong>Validation Temperature Scaling:</strong> Fitted strictly on 294 validation images with zero test leakage: $T_{\text{resnet}} = 0.60, T_{\text{effnet}} = 1.20, w_{\text{resnet}} = 0.40, w_{\text{effnet}} = 0.60$.
+                </li>
+                <li>
+                  <strong>Dataset Size & Split:</strong> 2,214 curated smartphone images across 1,491 subjects using a 70/15/15 subject-grouped stratified split (1,617 Train / 294 Val / 303 In-Domain Test), plus 337 held-out Google SCIN external test images.
+                </li>
+              </ul>
+            </div>
+
+            <!-- Column 2: In-Domain Test Performance -->
+            <div class="limitations-col">
+              <h4 class="limitations-col-title" data-i18n="perf_title">In-Domain Test Performance (303 Images)</h4>
+              <ul class="metrics-list">
+                <li><strong>Overall Accuracy:</strong> 92.74% (281 / 303 correct)</li>
+                <li><strong>Macro-F1 Score:</strong> 0.8736 (improved from baseline 0.8621 via calibration)</li>
+                <li><strong>Expected Calibration Error (ECE):</strong> 0.0197 (-36.0% reduction from 0.0308)</li>
+                <li><strong>Per-Class F1 Breakdown:</strong>
+                  <ul>
+                    <li>Normal: <strong>0.9804</strong> (75 / 76 recall)</li>
+                    <li>Acne: <strong>0.9412 – 0.9464</strong> (104 / 113 recall)</li>
+                    <li>Rosacea: <strong>0.9091 – 0.9100</strong> (90 / 99 recall)</li>
+                    <li>Dermatitis: <strong>0.6207 – 0.7059</strong> (12 / 15 recall)</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Selective Abstention Safety:</strong> Withholding low-confidence predictions achieves <strong>97.07% Accuracy</strong> at 90% coverage (273/303) and <strong>99.17% Accuracy (240/242)</strong> at 80% coverage on the in-domain test set.
+                </li>
+              </ul>
+            </div>
+
+            <!-- Column 3: Known Limitations & Domain Gap -->
+            <div class="limitations-col">
+              <h4 class="limitations-col-title" data-i18n="limits_title">Known Limitations & Clinical Scope</h4>
+              <ol class="limits-list">
+                <li>
+                  <strong>Dermatitis Sample Size:</strong> Only 93 training images (15 val, 15 test). The model merges Atopic Eczema and Contact Dermatitis due to overlapping spongiotic signs. F1 score is 0.62–0.71, so dermatitis predictions carry higher uncertainty.
+                </li>
+                <li>
+                  <strong>External SCIN Smartphone Domain Gap:</strong> Raw 4-class accuracy on the held-out SCIN benchmark (337 images, 82.5% macro close-ups, 72.7% Dermatitis, 0% Normal) is <strong>20.77%</strong> (Macro-F1 0.1665), which rises to <strong>44.51% Accuracy</strong> (Macro-F1 0.3321, Dermatitis recall 45.31%) under 3-class Symptomatic Triage Mode.
+                </li>
+                <li>
+                  <strong>Scope Constrained to 4 Classes:</strong> The model only recognizes Acne, Rosacea, Dermatitis, and Normal. It cannot identify skin cancers (melanoma, basal cell carcinoma), bacterial/fungal infections, or pigmentary disorders.
+                </li>
+              </ol>
+            </div>
+
+          </div>
+        </div>
+      </details>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p class="footer-copy">
+        &copy; 2026 CPE310 Healthcare AI System Team • University Demonstration Project
+      </p>
+      <p class="footer-disclaimer">
+        Educational research demonstration only — NOT a medical diagnosis. Uploaded photos are processed strictly in memory and never saved to disk.
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

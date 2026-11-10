@@ -1,0 +1,251 @@
+{
+  "prediction": "rosacea",
+  "prediction_label": "Rosacea",
+  "confidence": 0.9124,
+  "abstained": false,
+  "abstention_threshold": 0.7852,
+  "abstention_message": null,
+  "caution_note": null,
+  "triage_mode": false,
+  "probabilities": {
+    "acne": 0.0412,
+    "rosacea": 0.9124,
+    "dermatitis": 0.0281,
+    "normal": 0.0183
+  },
+  "top2": [
+    "rosacea",
+    "acne"
+  ],
+  "input_mode": "face",
+  "face_detected": true,
+  "num_patches": 5,
+  "dominant_region": "left_cheek",
+  "region_probabilities": {
+    "forehead": {
+      "acne": 0.081,
+      "rosacea": 0.842,
+      "dermatitis": 0.045,
+      "normal": 0.032
+    },
+    "nose": {
+      "acne": 0.032,
+      "rosacea": 0.931,
+      "dermatitis": 0.021,
+      "normal": 0.016
+    },
+    "left_cheek": {
+      "acne": 0.029,
+      "rosacea": 0.945,
+      "dermatitis": 0.018,
+      "normal": 0.008
+    },
+    "right_cheek": {
+      "acne": 0.034,
+      "rosacea": 0.928,
+      "dermatitis": 0.024,
+      "normal": 0.014
+    },
+    "chin": {
+      "acne": 0.03,
+      "rosacea": 0.916,
+      "dermatitis": 0.0325,
+      "normal": 0.0215
+    }
+  },
+  "model_breakdown": {
+    "resnet50": {
+      "prediction": "rosacea",
+      "confidence": 0.931,
+      "probabilities": {
+        "acne": 0.031,
+        "rosacea": 0.931,
+        "dermatitis": 0.022,
+        "normal": 0.016
+      }
+    },
+    "efficientnet_b0": {
+      "prediction": "rosacea",
+      "confidence": 0.9,
+      "probabilities": {
+        "acne": 0.048,
+        "rosacea": 0.9,
+        "dermatitis": 0.0322,
+        "normal": 0.0198
+      }
+    },
+    "models_agree": true,
+    "calibration_params": {
+      "t_resnet": 0.6,
+      "t_effnet": 1.2,
+      "w_resnet": 0.4,
+      "w_effnet": 0.6
+    }
+  },
+  "original_image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAIAAACVT/22AAAFg0lEQVR4nO3dPW5UQRBF4TEiqkUQsw1i1uvY2yCFlJiOCZCQhQHz49d9btX5YrDeVJ3XM+Ox5bsvnz/eJKpXpy9A+h0DFZqBCs1AhWagQjNQoRmo0AxUaAYqNAMVmoEKzUCFZqBCM1ChGajQDFRoBio0AxWagQrt9ekLSLU+ffjb/1Jv3l5zLZ3d+UtzF+X4J0z2WQa6O8pfMdafMtDDXT5lqY8ZKKXLp8pSDRTY5VM1uNS5gUak+djMTCcGGpfm5ExnBRqd5sxMpwTaJs1pmfYPtGWaczJt/ll8+zpv3R9j2xO099rmHKU9T9CBdd6aPupuJ2jLJU0+SludoNbZbw59Au20lf+3ukyjSaBt9vGCVouZxL8G7bGGS1XyS9LsE9Q6208pONDouW+2YmeVGmjuxE9ZmROLDDR01setwLnlBZo4ZY6VNr2wQOPmC7SiZpgUaNZkyVbOJGMCDZpphBUyz4xAU6aZZSVMNSNQjRUQaMSNHmrhZ0sPlD/BdIs9YXSg8Nm1scBz5gZKnlo/izptbqASN1DsDd3YQs6cGChzUhMs3uSJgUrcQIE38SgLNn9WoLTpzLRIW2AFKnEDRd24wy3MLiiBciYi1EYogUrcQCE3q4B7QQQqcQMl3KbCbud8oBI30OM3qOA78gQV2slAPT5TrHOb8gQV2rFAPT6zrEP78gQVmoEK7UygPr8nWie25gkqtAOBenzmWtt35wkqNAMV2u5AfX5Pt/Zu0BNUaAYqtK1/q/PI8/vD/f3v/8G79+9vYA/I69/29z97BvrsUuGx8q+/DHTzaiGZplx/GeiR1R7MNOv6a1eg+94kZdV50ddsc/1r16u1Du/ir9vEnkbTr/9SHQJVY/GBXn1I+PVHBOonnP2sLTuNP0HVW3ygV38zyK9/Vnyg6q1DoNcdEnuOn/Trjw90w6vpKzaxc7uh17+u3+yOjzp3voVP+Sy7zfXXxZ95dgs05aeB2lx/GWjLn6dsc/1loCK7OtAO7+LVmIFqdqA+v/e2Lt6vJ6jQDFRoBio0AxWagQrNQIVmoEIzUKEZqNAMVGgGKjQDFZqBCs1AhWagQjNQoRmo0AxUaAYqNAPV7EC3/TkIHeHvxWs0AxWagQrNQIVmoEIzUN2mB+p3mrqq6zfrCSo0AxWagQrNQIW2KVDfJ/VTW3bqCSo0AxWagQptX6C+DO2kdm3TE1RoBio0AxXa1kB9GdpDbdyjJ6jQDFRouwP1WT5d7d2gJ6jQDFRoBwL1WT5Xbd+dJ6jQzgTqIZqoTmzNE1RoBiq0Y4H6LJ+lDu3LE1RoJwP1EE1R5zblCSq0w4F6iPLV0R15ggrtfKAeomR1ejvnA5XogR6/TYXdCyJQiR4o4WYVcCOUQDkT0Y20C1CgEj1Qzo07WZG2wAqUNp2BCjZ/XKASPVDaTTxH8SZPDJQ5qfYKOXNooBI9UOYN3VVRp80NlDy1Zgo8Z3Sg8Nn1UOwJ0wPlTzBa4WcbEKgmywiUf6MnqoSpZgSaMs0gFTLPmECDZspXOZNMCjRrslgVNcOwQOPmS1Np08sLNHHKEBU4t8hAQ2d9VmVOLDXQ3IkfUbGzCg40eu47VfKU7r58/njLtz59OH0JRJWcZocTtNMmXly1mEmTQNvs46VUl2n0CbTTVv5TNZpDk9egPxj7krQapdnwBG28p7GPuucJOu0orY5pdj5BJ2xuyGNsfoL2PkqrdZqzAm2WaQ1Ic2KgDTKtMWnODTQ00xqW5vRAgzKtkWl+Mz1Qcqk1uMvvDBRXql0+ZqCUUu3ypwz0ZKxG+SwD3ZesOf4DAxVa88/ilc5AhWagQjNQoRmo0AxUaAYqNAMVmoEKzUCFZqBCM1ChGajQDFRoBio0AxWagQrNQHUj+wpWl/Ry9BK6/QAAAABJRU5ErkJggg==",
+  "gradcam_image": "data:image/png;base64,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",
+  "latency_ms": 124.5,
+  "info": {
+    "name": "Rosacea",
+    "model_match_phrase": "The model's best match is Rosacea.",
+    "short_description": "Rosacea is a chronic inflammatory skin condition primarily affecting the central facial areas, characterized by persistent erythema (redness), telangiectasia (visible blood vessels), and inflammatory papules or pustules without comedones.",
+    "typical_symptoms": [
+      "Persistent facial erythema (redness) across the nose and cheeks",
+      "Flushing or transient blushing triggered by heat, alcohol, or emotional stress",
+      "Visible telangiectasia (small dilated blood vessels)",
+      "Inflammatory papules and pustules resembling acne but without comedones",
+      "Burning, stinging, or heightened sensitivity of facial skin"
+    ],
+    "typical_facial_distribution": "Characteristic central-facial (malar/centrofacial) distribution concentrating on the convexities of the cheeks, nose, chin, and mid-forehead, typically sparing the periocular skin. In our model's test set, Grad-CAM attribution concentrated 68.1% of dominant attention on the nose, left cheek, and right cheek.",
+    "common_triggers_or_factors": [
+      "Sun exposure and ultraviolet (UV) radiation",
+      "Hot drinks, spicy foods, or alcohol (especially red wine)",
+      "Temperature extremes (hot baths, intense cold, or sudden temperature changes)",
+      "Emotional stress or vigorous physical exercise",
+      "Harsh or irritating cosmetic and skincare products"
+    ],
+    "commonly_confused_with": [
+      {
+        "condition": "Acne Vulgaris",
+        "how_it_differs": "Rosacea lacks open and closed comedones (blackheads and whiteheads) and features persistent vascular erythema and flushing, whereas Acne exhibits comedones and typically affects younger demographics across broader facial zones."
+      },
+      {
+        "condition": "Seborrheic / Contact Dermatitis",
+        "how_it_differs": "Seborrheic dermatitis presents with greasy yellowish scales along the nasolabial folds and eyebrows, whereas Rosacea presents with telangiectasia and dome-shaped inflammatory papules without greasy scaling."
+      },
+      {
+        "condition": "Perioral Dermatitis",
+        "how_it_differs": "Perioral dermatitis manifests as small micro-papules tightly clustered around the mouth and chin, often sparing the vermilion border, while Rosacea broadly affects the malar cheeks and nose."
+      }
+    ],
+    "general_care_tips": [
+      "Wash with a gentle, fragrance-free, soap-free cleanser using lukewarm water",
+      "Apply broad-spectrum sunscreen (SPF 30+ or higher, preferably mineral zinc oxide/titanium dioxide) daily",
+      "Keep a personal trigger diary to identify and avoid flushing triggers (spicy food, hot beverages, sudden heat)",
+      "Use a bland, barrier-supporting moisturizer suited for sensitive skin",
+      "Avoid harsh mechanical scrubs, astringents, alcohol-based toners, and exfoliating acids"
+    ],
+    "see_a_doctor_if": [
+      "You develop eye symptoms such as dryness, grittiness, redness, or light sensitivity (possible ocular rosacea)",
+      "Facial redness becomes persistent, painful, or is accompanied by burning sensations",
+      "Thickening or enlargement of skin occurs, particularly around the nose (rhinophyma)",
+      "Over-the-counter gentle skincare fails to manage pustules or flare-ups"
+    ],
+    "caution_note": null,
+    "en": {
+      "name": "Rosacea",
+      "model_match_phrase": "The model's best match is Rosacea.",
+      "short_description": "Rosacea is a chronic inflammatory skin condition primarily affecting the central facial areas, characterized by persistent erythema (redness), telangiectasia (visible blood vessels), and inflammatory papules or pustules without comedones.",
+      "typical_symptoms": [
+        "Persistent facial erythema (redness) across the nose and cheeks",
+        "Flushing or transient blushing triggered by heat, alcohol, or emotional stress",
+        "Visible telangiectasia (small dilated blood vessels)",
+        "Inflammatory papules and pustules resembling acne but without comedones",
+        "Burning, stinging, or heightened sensitivity of facial skin"
+      ],
+      "typical_facial_distribution": "Characteristic central-facial (malar/centrofacial) distribution concentrating on the convexities of the cheeks, nose, chin, and mid-forehead, typically sparing the periocular skin. In our model's test set, Grad-CAM attribution concentrated 68.1% of dominant attention on the nose, left cheek, and right cheek.",
+      "common_triggers_or_factors": [
+        "Sun exposure and ultraviolet (UV) radiation",
+        "Hot drinks, spicy foods, or alcohol (especially red wine)",
+        "Temperature extremes (hot baths, intense cold, or sudden temperature changes)",
+        "Emotional stress or vigorous physical exercise",
+        "Harsh or irritating cosmetic and skincare products"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "Acne Vulgaris",
+          "how_it_differs": "Rosacea lacks open and closed comedones (blackheads and whiteheads) and features persistent vascular erythema and flushing, whereas Acne exhibits comedones and typically affects younger demographics across broader facial zones."
+        },
+        {
+          "condition": "Seborrheic / Contact Dermatitis",
+          "how_it_differs": "Seborrheic dermatitis presents with greasy yellowish scales along the nasolabial folds and eyebrows, whereas Rosacea presents with telangiectasia and dome-shaped inflammatory papules without greasy scaling."
+        },
+        {
+          "condition": "Perioral Dermatitis",
+          "how_it_differs": "Perioral dermatitis manifests as small micro-papules tightly clustered around the mouth and chin, often sparing the vermilion border, while Rosacea broadly affects the malar cheeks and nose."
+        }
+      ],
+      "general_care_tips": [
+        "Wash with a gentle, fragrance-free, soap-free cleanser using lukewarm water",
+        "Apply broad-spectrum sunscreen (SPF 30+ or higher, preferably mineral zinc oxide/titanium dioxide) daily",
+        "Keep a personal trigger diary to identify and avoid flushing triggers (spicy food, hot beverages, sudden heat)",
+        "Use a bland, barrier-supporting moisturizer suited for sensitive skin",
+        "Avoid harsh mechanical scrubs, astringents, alcohol-based toners, and exfoliating acids"
+      ],
+      "see_a_doctor_if": [
+        "You develop eye symptoms such as dryness, grittiness, redness, or light sensitivity (possible ocular rosacea)",
+        "Facial redness becomes persistent, painful, or is accompanied by burning sensations",
+        "Thickening or enlargement of skin occurs, particularly around the nose (rhinophyma)",
+        "Over-the-counter gentle skincare fails to manage pustules or flare-ups"
+      ],
+      "caution_note": null
+    },
+    "th": {
+      "name": "โรคโรซาเซีย (Rosacea)",
+      "model_match_phrase": "ผลลัพธ์ที่ใกล้เคียงที่สุดจากโมเดลคือ โรคโรซาเซีย (Rosacea)",
+      "short_description": "โรคโรซาเซีย (Rosacea) เป็นภาวะผิวหนังอักเสบเรื้อรังที่มักเกิดขึ้นบริเวณกึ่งกลางใบหน้า โดยมีลักษณะเด่นคือรอยแดงถาวร หลอดเลือดฝอยขยายตัว (telangiectasia) และตุ่มแดงหรือตุ่มหนองอักเสบ โดยไม่มีรอยโรคสิวหัวเปิดหรือหัวปิด (comedones)",
+      "typical_symptoms": [
+        "รอยแดงต่อเนื่องบริเวณกึ่งกลางใบหน้า เช่น จมูกและแก้มทั้งสองข้าง",
+        "อาการหน้าแดงวูบวาบ (flushing) เมื่อสัมผัสความร้อน แอลกอฮอล์ หรือความเครียด",
+        "มองเห็นเส้นเลือดฝอยขยายตัวเป็นเส้นเล็กๆ ชัดเจนใต้ผิวหนัง",
+        "ตุ่มนูนแดงหรือตุ่มหนองอักเสบคล้ายสิว แต่ไม่มีหัวสิวอุดตัน",
+        "ความรู้สึกแสบร้อน ระคายเคือง หรือไวต่อสิ่งกระตุ้นมากกว่าปกติ"
+      ],
+      "typical_facial_distribution": "พบบริเวณกึ่งกลางใบหน้า (centrofacial / malar distribution) เป็นหลัก ครอบคลุมสันจมูก แก้ม คาง และกึ่งกลางหน้าผาก โดยมักเว้นบริเวณรอบดวงตา ซึ่งสอดคล้องกับการตรวจจับของ Grad-CAM ในโมเดลที่แสดงจุดโฟกัส 68.1% บนจมูกและแก้มซ้าย-ขวา",
+      "common_triggers_or_factors": [
+        "แสงแดดและรังสีอัลตราไวโอเลต (UV)",
+        "เครื่องดื่มร้อน อาหารรสจัด เผ็ดร้อน หรือเครื่องดื่มแอลกอฮอล์",
+        "การเปลี่ยนแปลงของอุณหภูมิอย่างรวดเร็ว อากาศร้อนจัด หรือหนาวจัด",
+        "ความเครียดทางอารมณ์หรือการออกกำลังกายอย่างหักโหม",
+        "ผลิตภัณฑ์ดูแลผิวที่มีสารระคายเคือง แอลกอฮอล์ หรือน้ำหอม"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "สิว (Acne Vulgaris)",
+          "how_it_differs": "โรคโรซาเซียจะไม่มีสิวหัวดำหรือสิวหัวขาว (comedones) และมีอาการหน้าแดงจากหลอดเลือดขยายตัวชัดเจนกว่า ในขณะที่สิวทั่วไปจะมีสิวอุดตันเป็นอาการสำคัญ"
+        },
+        {
+          "condition": "โรคเซ็บเดิร์มหรือผื่นแพ้สัมผัส (Dermatitis)",
+          "how_it_differs": "เซ็บเดิร์มมักมีขุยสะเก็ดสีเหลืองมันวาวตามร่องจมูกและคิ้ว ในขณะที่โรซาเซียจะเป็นตุ่มแดงอักเสบร่วมกับเส้นเลือดฝอยขยายตัวและไม่มีขุยมัน"
+        },
+        {
+          "condition": "ผื่นรอบปาก (Perioral Dermatitis)",
+          "how_it_differs": "ผื่นรอบปากจะกระจุกตัวหนาแน่นรอบริมฝีปากและคางเป็นหลัก แต่โรซาเซียจะกระจายเด่นบริเวณโหนกแก้มทั้งสองข้างและสันจมูก"
+        }
+      ],
+      "general_care_tips": [
+        "ล้างหน้าด้วยผลิตภัณฑ์สูตรอ่อนโยน ปราศจากสบู่และน้ำหอม ด้วยน้ำอุณหภูมิห้อง",
+        "ทาครีมกันแดดเป็นประจำทุกวัน (SPF 30 ขึ้นไป แนะนำสูตร physical/mineral ที่มี zinc oxide หรือ titanium dioxide)",
+        "จดบันทึกและหลีกเลี่ยงปัจจัยกระตุ้นส่วนบุคคล เช่น อาหารเผ็ดร้อน เครื่องดื่มแอลกอฮอล์ หรือการตากแดด",
+        "ใช้มอยส์เจอไรเซอร์บำรุงเกราะป้องกันผิวที่เหมาะสำหรับผิวบอบบางแพ้ง่าย",
+        "หลีกเลี่ยงการขัดถูหน้า การสครับ หรือการใช้ผลิตภัณฑ์ที่มีแอลกอฮอล์ กรดผลไม้เข้มข้น และสารผลัดเซลล์ผิวรุนแรง"
+      ],
+      "see_a_doctor_if": [
+        "มีอาการผิดปกติทางดวงตา เช่น ตาแห้ง เคืองตา แสบตา ตาแดง หรือแพ้แสง (สงสัย ocular rosacea)",
+        "รอยแดงบนใบหน้าไม่จางหาย ปวดแสบร้อน หรือมีอาการอักเสบรุนแรงขึ้นเรื่อยๆ",
+        "เริ่มสังเกตเห็นผิวหนังบริเวณจมูกหนาตัวหรือขยายใหญ่ขึ้นผิดปกติ (rhinophyma)",
+        "การดูแลตนเองเบื้องต้นไม่สามารถควบคุมตุ่มอักเสบหรืออาการหน้าแดงได้"
+      ],
+      "caution_note": null
+    },
+    "sources": [
+      {
+        "title": "American Academy of Dermatology — Rosacea",
+        "url": "https://www.aad.org/public/diseases/rosacea"
+      },
+      {
+        "title": "National Rosacea Society — All About Rosacea",
+        "url": "https://www.rosacea.org/patients/all-about-rosacea"
+      },
+      {
+        "title": "NHS — Rosacea",
+        "url": "https://www.nhs.uk/conditions/rosacea/"
+      },
+      {
+        "title": "Mayo Clinic — Rosacea Symptoms & Causes",
+        "url": "https://www.mayoclinic.org/diseases-conditions/rosacea/symptoms-causes/syc-20353815"
+      }
+    ]
+  },
+  "disclaimer": "Educational research demonstration only — NOT a medical diagnosis. Do not use for clinical decision-making. Please consult a qualified dermatologist."
+}

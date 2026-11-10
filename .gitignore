@@ -26,3 +26,8 @@ Thumbs.db
 # Environment and private keys
 .env
 *.env
+
+# Summaries
+*summary*
+*SUMMARY*
+*Summary*

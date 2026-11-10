@@ -1,0 +1,662 @@
+{
+  "acne": {
+    "name": "Acne (Acne Vulgaris)",
+    "model_match_phrase": "The model's best match is Acne (Acne Vulgaris).",
+    "short_description": "Acne vulgaris is a widespread inflammatory condition of the pilosebaceous units (hair follicles and oil glands). It arises from excess sebum production, follicular hyperkeratinization (pore clogging), proliferation of Cutibacterium acnes, and localized inflammation, resulting in comedones, papules, pustules, or deeper cystic lesions.",
+    "typical_symptoms": [
+      "Open comedones (blackheads) and closed comedones (whiteheads)",
+      "Inflammatory red bumps (follicular papules)",
+      "Pus-filled spots (pustules) with central yellow or white fluid",
+      "Deeper, painful or tender nodules and cystic lesions in more severe presentations",
+      "Post-inflammatory erythema (red or purple marks) or hyperpigmentation after lesions resolve"
+    ],
+    "typical_facial_distribution": "Acne predominantly affects sebaceous-rich areas of the face, especially the T-zone (forehead, nose, chin) and lateral cheeks. In the model's 5-region Grad-CAM attribution, chin led attention at 28.9%, followed by right cheek (20.6%), left cheek (19.6%), and forehead (16.5%).",
+    "common_triggers_or_factors": [
+      "Hormonal fluctuations (e.g., puberty, menstrual cycles, endocrine changes)",
+      "Use of occlusive or pore-clogging (comedogenic) cosmetics, oils, or heavy skincare products",
+      "Friction or pressure on facial skin (such as face masks, phone screens, or tight headgear)",
+      "High humidity, excess sweating, and warm environments promoting pore blockage",
+      "Psychological stress, which can stimulate inflammatory hormone pathways"
+    ],
+    "commonly_confused_with": [
+      {
+        "condition": "Rosacea",
+        "how_it_differs": "Rosacea primarily involves persistent central facial redness, flushing, and visible small blood vessels (telangiectasia) without the characteristic open or closed comedones (blackheads/whiteheads) seen in acne."
+      },
+      {
+        "condition": "Folliculitis",
+        "how_it_differs": "Folliculitis presents as uniform, itchy, pinpoint pustules strictly centered around hair follicles (often fungal or bacterial in origin) rather than polymorphous acne comedones and nodules."
+      },
+      {
+        "condition": "Contact or Perioral Dermatitis",
+        "how_it_differs": "Dermatitis typically presents with prominent surface scaling, burning or intense itching, and eczematous erythema clustered around the mouth or eyes, without typical comedone formation."
+      }
+    ],
+    "general_care_tips": [
+      "Cleanse gently twice daily using a mild, non-abrasive, fragrance-free cleanser and lukewarm water",
+      "Apply non-comedogenic, oil-free moisturizers and broad-spectrum daily sunscreens that do not clog pores",
+      "Avoid squeezing, picking, or popping blemishes to prevent deeper inflammation, bacterial spread, and permanent scarring",
+      "Keep hair, hands, and mobile phone screens clean and away from direct facial contact",
+      "Introduce new skincare products gradually and perform patch tests before widespread facial application"
+    ],
+    "see_a_doctor_if": [
+      "Blemishes form deep, painful nodules or fluid-filled cysts beneath the skin surface",
+      "Skin lesions leave permanent pitting, indented scars, or persistent dark hyperpigmentation",
+      "Over-the-counter gentle daily skincare routines show no visible improvement after 8 to 12 weeks",
+      "Signs of secondary bacterial infection appear, such as spreading swelling, heat, or severe tenderness",
+      "Skin symptoms cause notable psychological distress, anxiety, or social isolation"
+    ],
+    "caution_note": null,
+    "en": {
+      "name": "Acne (Acne Vulgaris)",
+      "model_match_phrase": "The model's best match is Acne (Acne Vulgaris).",
+      "short_description": "Acne vulgaris is a widespread inflammatory condition of the pilosebaceous units (hair follicles and oil glands). It arises from excess sebum production, follicular hyperkeratinization (pore clogging), proliferation of Cutibacterium acnes, and localized inflammation, resulting in comedones, papules, pustules, or deeper cystic lesions.",
+      "typical_symptoms": [
+        "Open comedones (blackheads) and closed comedones (whiteheads)",
+        "Inflammatory red bumps (follicular papules)",
+        "Pus-filled spots (pustules) with central yellow or white fluid",
+        "Deeper, painful or tender nodules and cystic lesions in more severe presentations",
+        "Post-inflammatory erythema (red or purple marks) or hyperpigmentation after lesions resolve"
+      ],
+      "typical_facial_distribution": "Acne predominantly affects sebaceous-rich areas of the face, especially the T-zone (forehead, nose, chin) and lateral cheeks. In the model's 5-region Grad-CAM attribution, chin led attention at 28.9%, followed by right cheek (20.6%), left cheek (19.6%), and forehead (16.5%).",
+      "common_triggers_or_factors": [
+        "Hormonal fluctuations (e.g., puberty, menstrual cycles, endocrine changes)",
+        "Use of occlusive or pore-clogging (comedogenic) cosmetics, oils, or heavy skincare products",
+        "Friction or pressure on facial skin (such as face masks, phone screens, or tight headgear)",
+        "High humidity, excess sweating, and warm environments promoting pore blockage",
+        "Psychological stress, which can stimulate inflammatory hormone pathways"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "Rosacea",
+          "how_it_differs": "Rosacea primarily involves persistent central facial redness, flushing, and visible small blood vessels (telangiectasia) without the characteristic open or closed comedones (blackheads/whiteheads) seen in acne."
+        },
+        {
+          "condition": "Folliculitis",
+          "how_it_differs": "Folliculitis presents as uniform, itchy, pinpoint pustules strictly centered around hair follicles (often fungal or bacterial in origin) rather than polymorphous acne comedones and nodules."
+        },
+        {
+          "condition": "Contact or Perioral Dermatitis",
+          "how_it_differs": "Dermatitis typically presents with prominent surface scaling, burning or intense itching, and eczematous erythema clustered around the mouth or eyes, without typical comedone formation."
+        }
+      ],
+      "general_care_tips": [
+        "Cleanse gently twice daily using a mild, non-abrasive, fragrance-free cleanser and lukewarm water",
+        "Apply non-comedogenic, oil-free moisturizers and broad-spectrum daily sunscreens that do not clog pores",
+        "Avoid squeezing, picking, or popping blemishes to prevent deeper inflammation, bacterial spread, and permanent scarring",
+        "Keep hair, hands, and mobile phone screens clean and away from direct facial contact",
+        "Introduce new skincare products gradually and perform patch tests before widespread facial application"
+      ],
+      "see_a_doctor_if": [
+        "Blemishes form deep, painful nodules or fluid-filled cysts beneath the skin surface",
+        "Skin lesions leave permanent pitting, indented scars, or persistent dark hyperpigmentation",
+        "Over-the-counter gentle daily skincare routines show no visible improvement after 8 to 12 weeks",
+        "Signs of secondary bacterial infection appear, such as spreading swelling, heat, or severe tenderness",
+        "Skin symptoms cause notable psychological distress, anxiety, or social isolation"
+      ],
+      "caution_note": null
+    },
+    "th": {
+      "name": "สิว (Acne Vulgaris)",
+      "model_match_phrase": "ผลลัพธ์ที่ใกล้เคียงที่สุดจากโมเดลคือ สิว (Acne Vulgaris)",
+      "short_description": "สิวธรรมดา (Acne Vulgaris) เป็นภาวะการอักเสบเรื้อรังของต่อมไขมันและรูขุมขนบนใบหน้า เกิดจากการผลิตน้ำมันส่วนเกิน (Sebum) การสะสมของเซลล์ผิวที่ตายแล้วจนเกิดการอุดตันในรูขุมขน การเพิ่มจำนวนของเชื้อแบคทีเรียประจำถิ่น และปฏิกิริยาการอักเสบเฉพาะที่ ส่งผลให้เกิดสิวอุดตัน สิวอักเสบ หรือตุ่มหนอง",
+      "typical_symptoms": [
+        "สิวหัวดำ (สิวอุดตันหัวเปิด) และสิวหัวขาว (สิวอุดตันหัวปิด)",
+        "ตุ่มแดงอักเสบขนาดเล็ก (Papules) บริเวณรูขุมขน",
+        "ตุ่มหนองอักเสบ (Pustules) ที่มีจุดสีขาวหรือเหลืองตรงกลาง",
+        "ตุ่มนูนแดงขนาดใหญ่หรือถุงซีสต์ใต้ผิวหนังที่มีอาการเจ็บปวดในระดับรุนแรง",
+        "รอยแดงและรอยดำหลังการอักเสบของผิวหนัง"
+      ],
+      "typical_facial_distribution": "สิวมักพบบริเวณที่มีต่อมไขมันหนาแน่น โดยเฉพาะทีโซน (หน้าผาก จมูก คาง) และแก้มทั้งสองข้าง ซึ่งในการวิเคราะห์ความสนใจของโมเดลผ่าน Grad-CAM พบจุดสนใจสูงสุดที่บริเวณคาง 28.9% ตามด้วยแก้มขวา 20.6% แก้มซ้าย 19.6% และหน้าผาก 16.5%",
+      "common_triggers_or_factors": [
+        "การเปลี่ยนแปลงของระดับฮอร์โมนในร่างกาย เช่น ช่วงวัยรุ่น หรือรอบประจำเดือน",
+        "การใช้เครื่องสำอางหรือผลิตภัณฑ์บำรุงผิวที่มีส่วนผสมที่ก่อให้เกิดการอุดตัน (Comedogenic)",
+        "การเสียดสีหรือสัมผัสบนใบหน้าบ่อยครั้ง เช่น การสวมหน้ากากอนามัย หรือหน้าจอโทรศัพท์มือถือ",
+        "สภาพอากาศร้อนชื้น เหงื่อออกมาก และมลภาวะที่กระตุ้นการสะสมของสิ่งสกปรกในรูขุมขน",
+        "ความเครียดและการพักผ่อนไม่เพียงพอ ซึ่งกระตุ้นการหลั่งฮอร์โมนและกระบวนการอักเสบ"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "โรคโรซาเซีย (Rosacea)",
+          "how_it_differs": "โรคโรซาเซียมีลักษณะเด่นคือรอยแดงถาวร อาการหน้าแดงวูบวาบ และเส้นเลือดฝอยขยายตัวบริเวณกึ่งกลางใบหน้า โดยจะไม่มีสิวหัวดำหรือสิวหัวขาวอุดตันเหมือนสิวทั่วไป"
+        },
+        {
+          "condition": "รูขุมขนอักเสบ (Folliculitis)",
+          "how_it_differs": "รูขุมขนอักเสบมักเกิดจากการติดเชื้อแบคทีเรียหรือเชื้อรา มีลักษณะเป็นตุ่มหนองขนาดเล็กที่เท่าๆ กันรอบรูขุมขน และมักมีอาการคันเด่นชัด แตกต่างจากสิวที่มีรอยโรคหลายรูปแบบปะปนกัน"
+        },
+        {
+          "condition": "โรคผิวหนังอักเสบ (Dermatitis)",
+          "how_it_differs": "โรคผิวหนังอักเสบมักมีอาการคันรุนแรง ผิวแห้งลอกเป็นขุย หรือมีผื่นแดงที่ไม่จำกัดเฉพาะรูขุมขน และไม่มีหัวสิวอุดตัน"
+        }
+      ],
+      "general_care_tips": [
+        "ล้างทำความสะอาดผิวหน้าวันละ 2 ครั้งด้วยผลิตภัณฑ์ทำความสะอาดสูตรอ่อนโยน ไม่ระคายเคือง และใช้น้ำอุณหภูมิห้อง",
+        "เลือกใช้ผลิตภัณฑ์บำรุงผิวและครีมกันแดดสูตรปราศจากน้ำมัน (Oil-free) และระบุว่าไม่ก่อให้เกิดการอุดตัน (Non-comedogenic)",
+        "หลีกเลี่ยงการบีบ แกะ หรือกดสิวด้วยตนเอง เพื่อลดความเสี่ยงของการอักเสบลุกลาม การติดเชื้อซ้ำซ้อน และการเกิดแผลเป็น",
+        "รักษาความสะอาดของสิ่งของที่สัมผัสใบหน้าเป็นประจำ เช่น ปลอกหมอน ผ้าเช็ดหน้า และโทรศัพท์มือถือ",
+        "ทดสอบการแพ้ผลิตภัณฑ์บำรุงผิวชนิดใหม่บริเวณผิวหนังส่วนอื่นก่อนเริ่มใช้กับใบหน้า"
+      ],
+      "see_a_doctor_if": [
+        "มีตุ่มสิวอักเสบขนาดใหญ่ เป็นก้อนแข็งใต้ผิวหนัง หรือถุงหนองที่มีอาการเจ็บปวดมาก",
+        "สิวเริ่มทิ้งรอยแผลเป็นหลุมลึกหรือรอยดำเรื้อรังที่ยากต่อการฟื้นฟู",
+        "การดูแลผิวหน้าเบื้องต้นด้วยตนเองอย่างต่อเนื่องเป็นเวลา 8 ถึง 12 สัปดาห์ไม่แสดงผลลัพธ์ที่ดีขึ้น",
+        "มีสัญญาณของการติดเชื้อแบคทีเรียแทรกซ้อน เช่น ผิวหนังบวมแดงร้อนขยายวงกว้าง",
+        "ปัญหาสิวส่งผลกระทบอย่างมีนัยสำคัญต่อความมั่นใจ คุณภาพชีวิต หรือสภาพจิตใจ"
+      ],
+      "caution_note": null
+    },
+    "sources": [
+      {
+        "title": "American Academy of Dermatology (AAD) — Acne: Overview, Signs & Symptoms",
+        "url": "https://www.aad.org/public/diseases/acne/really-acne/overview"
+      },
+      {
+        "title": "NHS — Acne",
+        "url": "https://www.nhs.uk/conditions/acne/"
+      },
+      {
+        "title": "Mayo Clinic — Acne: Symptoms and Causes",
+        "url": "https://www.mayoclinic.org/diseases-conditions/acne/symptoms-causes/syc-20368047"
+      },
+      {
+        "title": "DermNet NZ — Acne Vulgaris",
+        "url": "https://dermnetnz.org/topics/acne-vulgaris"
+      }
+    ]
+  },
+  "rosacea": {
+    "name": "Rosacea",
+    "model_match_phrase": "The model's best match is Rosacea.",
+    "short_description": "Rosacea is a chronic inflammatory vascular and dermatological condition primarily affecting the central facial areas. It is characterized by persistent erythema (redness), episodic flushing, telangiectasia (visible broken capillaries), and recurring inflammatory papules or pustules, distinctively without comedones.",
+    "typical_symptoms": [
+      "Persistent redness (erythema) across the central cheeks, nose, forehead, and chin",
+      "Frequent facial blushing or sudden warm flushing triggered by thermal or emotional stimuli",
+      "Visible small, dilated superficial blood vessels (telangiectasia)",
+      "Inflammatory red papules and small pustules resembling acne but lacking comedonal plugs",
+      "Sensations of skin stinging, burning, heightened skin sensitivity, or dryness"
+    ],
+    "typical_facial_distribution": "Rosacea classically centers on the convexities of the mid-face (centrofacial and malar regions), specifically the nose, medial cheeks, central chin, and lower central forehead, characteristically sparing the immediate periocular skin. In the model's 5-region Grad-CAM attribution, 68.1% of dominant attention concentrated on the nose, left cheek, and right cheek.",
+    "common_triggers_or_factors": [
+      "Exposure to ultraviolet (UV) radiation and direct sunlight",
+      "Rapid temperature changes, intense heat, hot baths, saunas, or cold windy weather",
+      "Spicy foods, thermally hot beverages, and alcohol (notably red wine)",
+      "Strenuous physical exercise and cardiovascular exertion causing facial vasodilation",
+      "Emotional stress, anxiety, or embarrassment triggering neurovascular flushing"
+    ],
+    "commonly_confused_with": [
+      {
+        "condition": "Acne Vulgaris",
+        "how_it_differs": "Acne features open and closed comedones (blackheads and whiteheads) and oily sebum blockage, whereas rosacea has no comedones and features background vascular erythema and telangiectasia."
+      },
+      {
+        "condition": "Contact or Seborrheic Dermatitis",
+        "how_it_differs": "Seborrheic dermatitis involves greasy, yellowish scales prominent in nasolabial folds and eyebrows, whereas contact dermatitis features acute itching and scaling linked to specific allergen exposure."
+      },
+      {
+        "condition": "Systemic Lupus Erythematosus (Malar Rash)",
+        "how_it_differs": "Lupus malar rash typically spans across the bridge of the nose and cheeks in a butterfly pattern without papulopustules, spares the nasolabial folds, and is accompanied by systemic markers."
+      }
+    ],
+    "general_care_tips": [
+      "Use broad-spectrum mineral sunscreens daily (such as zinc oxide or titanium dioxide) that offer gentle physical protection without chemical irritation",
+      "Cleanse gently with lukewarm water and a fragrance-free, soap-free cleanser, avoiding vigorous rubbing or physical scrubs",
+      "Maintain a daily trigger journal to identify and minimize personal triggers (such as spicy foods, heat, or specific skincare ingredients)",
+      "Avoid astringents, toners containing alcohol or witch hazel, exfoliants, and fragranced cosmetic formulations",
+      "Protect facial skin from harsh environmental elements using scarves, wide-brimmed hats, or gentle barrier moisturizers in cold or windy weather"
+    ],
+    "see_a_doctor_if": [
+      "Eye symptoms develop (ocular rosacea), such as grittiness, dryness, light sensitivity, eyelid swelling, or bloodshot eyes",
+      "Skin thickening, enlargement, or irregular surface texture occurs around the nose (rhinophyma)",
+      "Persistent burning, stinging, or redness causes progressive discomfort and does not respond to conservative trigger avoidance",
+      "Redness and visible vascular networks spread extensively beyond the central face",
+      "Frequent, distressing facial flushing interferes with daily professional, social, or emotional activities"
+    ],
+    "caution_note": null,
+    "en": {
+      "name": "Rosacea",
+      "model_match_phrase": "The model's best match is Rosacea.",
+      "short_description": "Rosacea is a chronic inflammatory vascular and dermatological condition primarily affecting the central facial areas. It is characterized by persistent erythema (redness), episodic flushing, telangiectasia (visible broken capillaries), and recurring inflammatory papules or pustules, distinctively without comedones.",
+      "typical_symptoms": [
+        "Persistent redness (erythema) across the central cheeks, nose, forehead, and chin",
+        "Frequent facial blushing or sudden warm flushing triggered by thermal or emotional stimuli",
+        "Visible small, dilated superficial blood vessels (telangiectasia)",
+        "Inflammatory red papules and small pustules resembling acne but lacking comedonal plugs",
+        "Sensations of skin stinging, burning, heightened skin sensitivity, or dryness"
+      ],
+      "typical_facial_distribution": "Rosacea classically centers on the convexities of the mid-face (centrofacial and malar regions), specifically the nose, medial cheeks, central chin, and lower central forehead, characteristically sparing the immediate periocular skin. In the model's 5-region Grad-CAM attribution, 68.1% of dominant attention concentrated on the nose, left cheek, and right cheek.",
+      "common_triggers_or_factors": [
+        "Exposure to ultraviolet (UV) radiation and direct sunlight",
+        "Rapid temperature changes, intense heat, hot baths, saunas, or cold windy weather",
+        "Spicy foods, thermally hot beverages, and alcohol (notably red wine)",
+        "Strenuous physical exercise and cardiovascular exertion causing facial vasodilation",
+        "Emotional stress, anxiety, or embarrassment triggering neurovascular flushing"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "Acne Vulgaris",
+          "how_it_differs": "Acne features open and closed comedones (blackheads and whiteheads) and oily sebum blockage, whereas rosacea has no comedones and features background vascular erythema and telangiectasia."
+        },
+        {
+          "condition": "Contact or Seborrheic Dermatitis",
+          "how_it_differs": "Seborrheic dermatitis involves greasy, yellowish scales prominent in nasolabial folds and eyebrows, whereas contact dermatitis features acute itching and scaling linked to specific allergen exposure."
+        },
+        {
+          "condition": "Systemic Lupus Erythematosus (Malar Rash)",
+          "how_it_differs": "Lupus malar rash typically spans across the bridge of the nose and cheeks in a butterfly pattern without papulopustules, spares the nasolabial folds, and is accompanied by systemic markers."
+        }
+      ],
+      "general_care_tips": [
+        "Use broad-spectrum mineral sunscreens daily (such as zinc oxide or titanium dioxide) that offer gentle physical protection without chemical irritation",
+        "Cleanse gently with lukewarm water and a fragrance-free, soap-free cleanser, avoiding vigorous rubbing or physical scrubs",
+        "Maintain a daily trigger journal to identify and minimize personal triggers (such as spicy foods, heat, or specific skincare ingredients)",
+        "Avoid astringents, toners containing alcohol or witch hazel, exfoliants, and fragranced cosmetic formulations",
+        "Protect facial skin from harsh environmental elements using scarves, wide-brimmed hats, or gentle barrier moisturizers in cold or windy weather"
+      ],
+      "see_a_doctor_if": [
+        "Eye symptoms develop (ocular rosacea), such as grittiness, dryness, light sensitivity, eyelid swelling, or bloodshot eyes",
+        "Skin thickening, enlargement, or irregular surface texture occurs around the nose (rhinophyma)",
+        "Persistent burning, stinging, or redness causes progressive discomfort and does not respond to conservative trigger avoidance",
+        "Redness and visible vascular networks spread extensively beyond the central face",
+        "Frequent, distressing facial flushing interferes with daily professional, social, or emotional activities"
+      ],
+      "caution_note": null
+    },
+    "th": {
+      "name": "โรคโรซาเซีย (Rosacea)",
+      "model_match_phrase": "ผลลัพธ์ที่ใกล้เคียงที่สุดจากโมเดลคือ โรคโรซาเซีย (Rosacea)",
+      "short_description": "โรคโรซาเซียเป็นโรคผิวหนังอักเสบเรื้อรังที่สัมพันธ์กับระบบหลอดเลือด มักพบบริเวณกึ่งกลางใบหน้า มีลักษณะสำคัญคือรอยแดงต่อเนื่อง อาการหน้าแดงวูบวาบ เส้นเลือดฝอยขยายตัวจนมองเห็นได้ชัด และอาจมีตุ่มแดงอักเสบหรือตุ่มหนองร่วมด้วย โดยไม่มีสิวหัวดำหรือสิวหัวขาวอุดตัน",
+      "typical_symptoms": [
+        "รอยแดงต่อเนื่องบริเวณกึ่งกลางใบหน้า เช่น แก้ม จมูก หน้าผาก และคาง",
+        "อาการหน้าแดงวูบวาบ (Flushing) เมื่อสัมผัสความร้อนหรือสิ่งกระตุ้น",
+        "เส้นเลือดฝอยขนาดเล็กใต้ผิวหนังขยายตัวจนมองเห็นได้ชัดเจน (Telangiectasia)",
+        "ตุ่มแดงอักเสบและตุ่มหนองขนาดเล็กที่คล้ายสิว แต่ไม่มีหัวสิวอุดตัน",
+        "ความรู้สึกแสบร้อน ระคายเคือง ยิบๆ หรือผิวหนังไวต่อสิ่งสัมผัส"
+      ],
+      "typical_facial_distribution": "โรคโรซาเซียมักกระจายตัวเด่นชัดบริเวณกึ่งกลางใบหน้า (Centrofacial) ได้แก่ จมูก โหนกแก้มทั้งสองข้าง กึ่งกลางหน้าผาก และคาง โดยมักเว้นบริเวณรอบดวงตา ซึ่งในการวิเคราะห์ Grad-CAM ของโมเดล พบว่าจุดสนใจกระจุกตัวถึง 68.1% ที่บริเวณจมูก แก้มซ้าย และแก้มขวา",
+      "common_triggers_or_factors": [
+        "แสงแดดและรังสีอัลตราไวโอเลต (UV)",
+        "การเปลี่ยนแปลงของอุณหภูมิอย่างรวดเร็ว อากาศร้อนจัด หรือสภาพอากาศเย็นและลมแรง",
+        "อาหารรสจัด เผ็ดร้อน เครื่องดื่มอุณหภูมิสูง และเครื่องดื่มแอลกอฮอล์",
+        "การออกกำลังกายที่ใช้แรงหนักจนร่างกายมีความร้อนสูงและหลอดเลือดขยายตัว",
+        "ความเครียด ความวิตกกังวล และอารมณ์ที่แปรปรวน"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "สิว (Acne Vulgaris)",
+          "how_it_differs": "สิวทั่วไปจะมีสิวหัวดำหรือสิวหัวขาวจากการอุดตันของไขมันและเซลล์ผิว ในขณะที่โรซาเซียไม่มีหัวสิวอุดตัน และมีอาการหน้าแดงจากเส้นเลือดฝอยขยายตัวเป็นลักษณะเด่น"
+        },
+        {
+          "condition": "โรคเซบเดิร์มหรือผื่นระคายสัมผัส (Seborrheic / Contact Dermatitis)",
+          "how_it_differs": "เซบเดิร์มมักมีขุยสะเก็ดสีเหลืองเป็นมันบริเวณร่องจมูกหรือคิ้ว ส่วนผื่นสัมผัสจะสัมพันธ์กับประวัติการสัมผัสสารก่อภูมิแพ้และมีอาการคันเด่นชัด"
+        },
+        {
+          "condition": "ผื่นปีกผีเสื้อจากโรคลูปัส (Systemic Lupus Erythematosus)",
+          "how_it_differs": "ผื่นปีกผีเสื้อในโรคลูปัสมีลักษณะเป็นปื้นแดงแบนพาดข้ามสันจมูกและแก้ม มักเว้นร่องแก้ม ไม่พบตุ่มหนอง และอาจมีอาการทางระบบร่างกายอื่นร่วมด้วย"
+        }
+      ],
+      "general_care_tips": [
+        "ทาครีมกันแดดเป็นประจำทุกวัน โดยเลือกสูตร Physical/Mineral (เช่น Zinc Oxide หรือ Titanium Dioxide) เพื่อลดการระคายเคือง",
+        "ทำความสะอาดผิวหน้าด้วยน้ำอุณหภูมิห้องและผลิตภัณฑ์ทำความสะอาดสูตรอ่อนโยน ปราศจากสบู่และน้ำหอม โดยไม่ขัดถูผิว",
+        "จดบันทึกสิ่งกระตุ้นในชีวิตประจำวันเพื่อสังเกตและหลีกเลี่ยงปัจจัยที่ทำให้หน้าแดง (เช่น อาหารเผ็ด ความร้อน หรือแสงแดด)",
+        "หลีกเลี่ยงผลิตภัณฑ์บำรุงผิวที่มีส่วนผสมของแอลกอฮอล์ น้ำหอม กรดผลไม้ หรือสครับขัดผิวที่รุนแรง",
+        "ปกป้องผิวจากลมหนาวและแสงแดดด้วยการสวมหมวกปีกกว้าง หรือใช้ผ้าคลุมหน้าเมื่อต้องเผชิญสภาพแวดล้อมที่รุนแรง"
+      ],
+      "see_a_doctor_if": [
+        "มีอาการผิดปกติทางดวงตา เช่น ตาแห้ง เคืองตา ตาแดง รู้สึกเหมือนมีเม็ดทรายในตา หรือเปลือกตาบวม",
+        "เนื้อเยื่อบริเวณจมูกเริ่มหนาตัว ขยายใหญ่ หรือมีผิวขรุขระผิดปกติ (Rhinophyma)",
+        "มีอาการแสบร้อน เจ็บปวด หรือรอยแดงรุนแรงต่อเนื่องจนส่งผลกระทบต่อการใช้ชีวิต",
+        "รอยแดงและเส้นเลือดฝอยขยายตัวลุกลามออกนอกบริเวณกึ่งกลางใบหน้า",
+        "การปรับพฤติกรรมและการดูแลตนเองเบื้องต้นไม่สามารถควบคุมอาการหน้าแดงหรือตุ่มอักเสบได้"
+      ],
+      "caution_note": null
+    },
+    "sources": [
+      {
+        "title": "American Academy of Dermatology (AAD) — Rosacea: Overview, Causes & Symptoms",
+        "url": "https://www.aad.org/public/diseases/rosacea"
+      },
+      {
+        "title": "National Rosacea Society — All About Rosacea",
+        "url": "https://www.rosacea.org/patients/all-about-rosacea"
+      },
+      {
+        "title": "NHS — Rosacea",
+        "url": "https://www.nhs.uk/conditions/rosacea/"
+      },
+      {
+        "title": "Mayo Clinic — Rosacea: Symptoms and Causes",
+        "url": "https://www.mayoclinic.org/diseases-conditions/rosacea/symptoms-causes/syc-20353815"
+      }
+    ]
+  },
+  "dermatitis": {
+    "name": "Dermatitis (Eczema & Contact Dermatitis)",
+    "model_match_phrase": "The model's best match is Dermatitis (Eczema & Contact Dermatitis).",
+    "short_description": "Dermatitis is an inflammatory cutaneous reaction pattern marked by epidermal barrier dysfunction, pruritus (itching), erythema, and surface flaking or scaling. In this classifier, 'Dermatitis' merges Atopic Eczema (Atopic Dermatitis) and Contact Dermatitis (both irritant and allergic subtypes) because they share overlapping visual hallmarks — including spongiotic microvesiculation, diffuse erythema, and scaling — that cannot be reliably distinguished from a single photograph without clinical exposure history or patch testing.",
+    "typical_symptoms": [
+      "Intense itching (pruritus) that often worsens during the evening or night",
+      "Dry, flaking, rough, or peeling skin patches across affected zones",
+      "Erythematous, ill-defined pink to red patches or plaques on the skin",
+      "Mild swelling, surface weeping, or small vesicular crusting during acute flare-ups",
+      "Lichenification (skin thickening with exaggerated skin markings) in chronic recurring areas"
+    ],
+    "typical_facial_distribution": "Dermatitis commonly affects the delicate perioral and chin regions, eyelids, cheeks, or hairline margins depending on atopic barrier compromise or direct irritant/allergen contact. In the model's 5-region Grad-CAM attribution, the chin/perioral region commanded the highest dominant attention at 42.9%, followed by the cheeks.",
+    "common_triggers_or_factors": [
+      "Contact with harsh cleansers, detergents, synthetic fragrances, preservatives, or cosmetic chemicals",
+      "Environmental allergens such as house dust mites, animal dander, airborne pollens, or molds",
+      "Cold, dry winter air, low ambient humidity, or sudden shifts in indoor temperature",
+      "Impaired skin moisture barrier and elevated trans-epidermal water loss",
+      "Prolonged skin dampness or friction from wet face coverings and masks"
+    ],
+    "commonly_confused_with": [
+      {
+        "condition": "Acne Vulgaris",
+        "how_it_differs": "Dermatitis features intense pruritus, diffuse eczematous scaling, and lack of follicular comedones, whereas acne produces localized follicular comedones (blackheads/whiteheads) and inflammatory pustules."
+      },
+      {
+        "condition": "Rosacea",
+        "how_it_differs": "Rosacea predominantly causes central facial flushing, background telangiectasia, and papules without significant dry scaling or the severe itch characteristic of dermatitis."
+      },
+      {
+        "condition": "Psoriasis",
+        "how_it_differs": "Facial psoriasis typically exhibits well-demarcated, thick, silvery-scaled plaques, unlike the diffuse, ill-defined boundaries and fine scaling typical of eczematous dermatitis."
+      }
+    ],
+    "general_care_tips": [
+      "Apply rich, fragrance-free barrier moisturizers immediately after washing while skin is still slightly damp to lock in hydration",
+      "Wash with short, lukewarm rinses using gentle, non-soap syndet cleansers without scrubbing",
+      "Avoid scratching, rubbing, or picking affected areas to protect the compromised barrier and prevent secondary infections",
+      "Eliminate potential irritants, including fragrances, essential oils, exfoliating acids, and abrasive washcloths",
+      "Use a cool-mist indoor humidifier in dry or air-conditioned environments to maintain atmospheric moisture"
+    ],
+    "see_a_doctor_if": [
+      "Signs of secondary bacterial infection appear, such as honey-colored crusting, yellow weeping fluid, or spreading pain and warmth",
+      "Severe itching disrupts sleep, concentration, or basic everyday activities",
+      "Dermatitis lesions develop near or directly over the eyelids and periocular skin",
+      "Symptoms fail to improve or continue to worsen despite consistent gentle barrier care and trigger elimination",
+      "Sudden, blistering flares emerge that may require formal dermatological patch testing for allergen identification"
+    ],
+    "caution_note": "Note: Dermatitis is the smallest class in the training set (93 training / 15 test images; in-domain F1 0.62–0.71) and merges atopic eczema and contact dermatitis because their visual hallmarks overlap. Interpret predictions with extra caution.",
+    "en": {
+      "name": "Dermatitis (Eczema & Contact Dermatitis)",
+      "model_match_phrase": "The model's best match is Dermatitis (Eczema & Contact Dermatitis).",
+      "short_description": "Dermatitis is an inflammatory cutaneous reaction pattern marked by epidermal barrier dysfunction, pruritus (itching), erythema, and surface flaking or scaling. In this classifier, 'Dermatitis' merges Atopic Eczema (Atopic Dermatitis) and Contact Dermatitis (both irritant and allergic subtypes) because they share overlapping visual hallmarks — including spongiotic microvesiculation, diffuse erythema, and scaling — that cannot be reliably distinguished from a single photograph without clinical exposure history or patch testing.",
+      "typical_symptoms": [
+        "Intense itching (pruritus) that often worsens during the evening or night",
+        "Dry, flaking, rough, or peeling skin patches across affected zones",
+        "Erythematous, ill-defined pink to red patches or plaques on the skin",
+        "Mild swelling, surface weeping, or small vesicular crusting during acute flare-ups",
+        "Lichenification (skin thickening with exaggerated skin markings) in chronic recurring areas"
+      ],
+      "typical_facial_distribution": "Dermatitis commonly affects the delicate perioral and chin regions, eyelids, cheeks, or hairline margins depending on atopic barrier compromise or direct irritant/allergen contact. In the model's 5-region Grad-CAM attribution, the chin/perioral region commanded the highest dominant attention at 42.9%, followed by the cheeks.",
+      "common_triggers_or_factors": [
+        "Contact with harsh cleansers, detergents, synthetic fragrances, preservatives, or cosmetic chemicals",
+        "Environmental allergens such as house dust mites, animal dander, airborne pollens, or molds",
+        "Cold, dry winter air, low ambient humidity, or sudden shifts in indoor temperature",
+        "Impaired skin moisture barrier and elevated trans-epidermal water loss",
+        "Prolonged skin dampness or friction from wet face coverings and masks"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "Acne Vulgaris",
+          "how_it_differs": "Dermatitis features intense pruritus, diffuse eczematous scaling, and lack of follicular comedones, whereas acne produces localized follicular comedones (blackheads/whiteheads) and inflammatory pustules."
+        },
+        {
+          "condition": "Rosacea",
+          "how_it_differs": "Rosacea predominantly causes central facial flushing, background telangiectasia, and papules without significant dry scaling or the severe itch characteristic of dermatitis."
+        },
+        {
+          "condition": "Psoriasis",
+          "how_it_differs": "Facial psoriasis typically exhibits well-demarcated, thick, silvery-scaled plaques, unlike the diffuse, ill-defined boundaries and fine scaling typical of eczematous dermatitis."
+        }
+      ],
+      "general_care_tips": [
+        "Apply rich, fragrance-free barrier moisturizers immediately after washing while skin is still slightly damp to lock in hydration",
+        "Wash with short, lukewarm rinses using gentle, non-soap syndet cleansers without scrubbing",
+        "Avoid scratching, rubbing, or picking affected areas to protect the compromised barrier and prevent secondary infections",
+        "Eliminate potential irritants, including fragrances, essential oils, exfoliating acids, and abrasive washcloths",
+        "Use a cool-mist indoor humidifier in dry or air-conditioned environments to maintain atmospheric moisture"
+      ],
+      "see_a_doctor_if": [
+        "Signs of secondary bacterial infection appear, such as honey-colored crusting, yellow weeping fluid, or spreading pain and warmth",
+        "Severe itching disrupts sleep, concentration, or basic everyday activities",
+        "Dermatitis lesions develop near or directly over the eyelids and periocular skin",
+        "Symptoms fail to improve or continue to worsen despite consistent gentle barrier care and trigger elimination",
+        "Sudden, blistering flares emerge that may require formal dermatological patch testing for allergen identification"
+      ],
+      "caution_note": "Note: Dermatitis is the smallest class in the training set (93 training / 15 test images; in-domain F1 0.62–0.71) and merges atopic eczema and contact dermatitis because their visual hallmarks overlap. Interpret predictions with extra caution."
+    },
+    "th": {
+      "name": "โรคผิวหนังอักเสบ (Dermatitis)",
+      "model_match_phrase": "ผลลัพธ์ที่ใกล้เคียงที่สุดจากโมเดลคือ โรคผิวหนังอักเสบ (Dermatitis)",
+      "short_description": "โรคผิวหนังอักเสบเป็นภาวะปฏิกิริยาการอักเสบของผิวหนังที่เกิดจากเกราะป้องกันผิวหนังทำงานบกพร่อง ทำให้เกิดอาการคัน ผื่นแดง ผิวแห้งลอกเป็นขุย หรือมีน้ำเหลืองซึม ทั้งนี้ในระบบจำแนกของโมเดลนี้ กลุ่ม 'Dermatitis' ได้รวมโรคผื่นภูมิแพ้ผิวหนัง (Atopic Eczema) และโรคผื่นระคายสัมผัส (Contact Dermatitis ทั้งชนิดระคายเคืองและชนิดภูมิแพ้) เข้าไว้ด้วยกัน เนื่องจากทั้งสองภาวะมีลักษณะรอยโรคทางคลินิกคล้ายคลึงกัน (Spongiotic Erythema ขุย และอาการคัน) ซึ่งไม่สามารถแยกแยะออกจากกันได้อย่างน่าเชื่อถือจากภาพถ่ายเดี่ยวโดยไม่มีประวัติการสัมผัสหรือการทดสอบ Patch Test",
+      "typical_symptoms": [
+        "อาการคันผิวหนังอย่างรุนแรง (Pruritus) โดยเฉพาะช่วงเวลากลางคืน",
+        "ผิวแห้ง ลอกเป็นขุย หรือหยาบกร้านเป็นปื้น",
+        "ผื่นแดงหรือปื้นแดงที่มีขอบเขตไม่ชัดเจนบนผิวหนัง",
+        "มีตุ่มน้ำใสขนาดเล็ก อาการบวม หรือสะเก็ดแห้งกรังในระยะผื่นกำเริบเฉียบพลัน",
+        "ผิวหนังหนาตัวและมีร่องลายผิวชัดเจนขึ้น (Lichenification) จากการเกาเรื้อรัง"
+      ],
+      "typical_facial_distribution": "โรคผิวหนังอักเสบมักพบบริเวณรอบปาก คาง เปลือกตา แก้ม หรือตามแนวไรผม ขึ้นอยู่กับบริเวณที่สัมผัสสารก่อภูมิแพ้หรือสารระคายเคือง โดยในการวิเคราะห์ Grad-CAM ของโมเดล พบว่าจุดสนใจสูงสุดอยู่ที่บริเวณคางและรอบปากถึง 42.9% รวมถึงบริเวณแก้ม",
+      "common_triggers_or_factors": [
+        "การสัมผัสสารเคมีในเครื่องสำอาง ผลิตภัณฑ์ทำความสะอาด น้ำหอม หรือสารกันเสีย",
+        "สารก่อภูมิแพ้ในสภาพแวดล้อม เช่น ไรฝุ่น ละอองเกสร หรือขนสัตว์เลี้ยง",
+        "สภาพอากาศที่แห้งและเย็น หรือการอยู่ในห้องปรับอากาศเป็นเวลานานจนผิวขาดความชุ่มชื้น",
+        "ภาวะเกราะป้องกันผิวหนังอ่อนแอและการสูญเสียน้ำออกจากผิวหนังชั้นนอก",
+        "ความอับชื้นและการเสียดสีต่อเนื่อง เช่น จากการสวมหน้ากากอนามัยเป็นเวลานาน"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "สิว (Acne Vulgaris)",
+          "how_it_differs": "โรคผิวหนังอักเสบมีอาการคันเด่นชัด มีขุยสะเก็ด และไม่มีหัวสิวอุดตัน แตกต่างจากสิวที่มีสิวหัวดำ สิวหัวขาว หรือตุ่มหนองรอบรูขุมขน"
+        },
+        {
+          "condition": "โรคโรซาเซีย (Rosacea)",
+          "how_it_differs": "โรคโรซาเซียมักมีรอยแดงถาวร เส้นเลือดฝอยขยายตัว และอาการวูบวาบบริเวณกึ่งกลางใบหน้า โดยมักไม่มีขุยแห้งลอกหรืออาการคันรุนแรงเหมือนผิวหนังอักเสบ"
+        },
+        {
+          "condition": "โรคสะเก็ดเงิน (Psoriasis)",
+          "how_it_differs": "โรคสะเก็ดเงินมักมีผื่นปื้นแดงหนา ขอบเขตชัดเจน และมีสะเก็ดสีเงินหนาปกคลุม แตกต่างจากผิวหนังอักเสบที่มีขอบเขตผื่นไม่ชัดเจนและขุยละเอียดกว่า"
+        }
+      ],
+      "general_care_tips": [
+        "ทาครีมหรือมอยส์เจอไรเซอร์บำรุงผิวสูตรเข้มข้น ปราศจากน้ำหอม ทันทีหลังล้างหน้าเพื่อกักเก็บความชุ่มชื้นในชั้นผิว",
+        "ล้างหน้าด้วยน้ำอุณหภูมิห้องและใช้สารทำความสะอาดสูตรอ่อนโยนสำหรับผิวบอบบาง หลีกเลี่ยงการใช้น้ำอุ่นจัดและการขัดถู",
+        "หลีกเลี่ยงการเกาหรือสัมผัสบริเวณที่เป็นผื่น เพื่อป้องกันการทำลายเกราะผิวหนังและการติดเชื้อแบคทีเรียแทรกซ้อน",
+        "งดใช้ผลิตภัณฑ์ที่มีส่วนผสมของน้ำหอม แอลกอฮอล์ สารผลัดเซลล์ผิว หรือสารเคมีที่อาจก่อการระคายเคือง",
+        "ใช้เครื่องเพิ่มความชื้นในอากาศหากต้องอาศัยในห้องปรับอากาศหรือสภาพแวดล้อมที่อากาศแห้ง"
+      ],
+      "see_a_doctor_if": [
+        "มีสัญญาณของการติดเชื้อแบคทีเรียแทรกซ้อน เช่น มีน้ำเหลืองเยิ้ม สะเก็ดสีเหลืองทอง หรือผิวหนังบวมแดงปวดร้อน",
+        "อาการคันรุนแรงจนรบกวนการนอนหลับ การทำงาน หรือการดำเนินชีวิตประจำวัน",
+        "ผื่นเกิดขึ้นบริเวณรอบดวงตาหรือบนเปลือกตา ซึ่งต้องได้รับการดูแลเฉพาะทาง",
+        "อาการผื่นแดงไม่ดีขึ้นหรือลุกลามมากขึ้นหลังจากการดูแลผิวเบื้องต้นและหลีกเลี่ยงสิ่งกระตุ้น",
+        "มีอาการกำเริบรุนแรงเฉียบพลันและจำเป็นต้องได้รับการทดสอบสารก่อภูมิแพ้ทางผิวหนัง (Patch Test)"
+      ],
+      "caution_note": "ข้อสังเกต: ในชุดข้อมูลฝึกฝนของโมเดล กลุ่ม Dermatitis เป็นกลุ่มที่มีจำนวนภาพน้อยที่สุด (ภาพฝึกฝน 93 ภาพ / ภาพทดสอบ 15 ภาพ; ค่า In-Domain F1 0.62–0.71) และเป็นการรวมกลุ่มระหว่าง Atopic Eczema และ Contact Dermatitis เนื่องจากมีลักษณะภาพที่ทับซ้อนกัน จึงควรแปลผลลัพธ์ด้วยความระมัดระวังเป็นพิเศษ"
+    },
+    "sources": [
+      {
+        "title": "National Eczema Association (NEA) — Eczema Causes, Symptoms & Treatments",
+        "url": "https://nationaleczema.org/eczema/"
+      },
+      {
+        "title": "American Academy of Dermatology (AAD) — Atopic Dermatitis: Overview",
+        "url": "https://www.aad.org/public/diseases/eczema/types/atopic-dermatitis"
+      },
+      {
+        "title": "NHS — Contact Dermatitis",
+        "url": "https://www.nhs.uk/conditions/contact-dermatitis/"
+      },
+      {
+        "title": "DermNet NZ — Facial Dermatitis",
+        "url": "https://dermnetnz.org/topics/facial-dermatitis"
+      }
+    ]
+  },
+  "normal": {
+    "name": "Normal Skin (Healthy Control)",
+    "model_match_phrase": "The model's best match is Normal Skin (Healthy Control).",
+    "short_description": "A 'Normal' classification indicates that the deep learning model did not detect significant visual hallmarks of the three target inflammatory facial dermatoses (Acne, Rosacea, or Dermatitis). However, this result does NOT guarantee completely healthy skin or rule out conditions outside the model's 4-class training scope, such as hyperpigmentation, melasma, fungal or viral infections, benign growths, or cutaneous neoplasms.",
+    "typical_symptoms": [
+      "Balanced hydration with no extensive dry flaking or excessive sebum pooling",
+      "Even skin tone and texture across facial zones without focal inflammatory lesions",
+      "Absence of follicular comedones (blackheads or whiteheads), papules, and pustules",
+      "Absence of persistent central facial erythema (malar flushing) and visible telangiectasia",
+      "Absence of widespread eczematous scaling, surface weeping, or intense localized pruritus"
+    ],
+    "typical_facial_distribution": "Normal skin exhibits uniform, balanced texture and tone across all five anatomical regions (forehead, nose, left cheek, right cheek, and chin). In the model's 5-region Grad-CAM attribution, normal test samples demonstrated evenly distributed target probabilities (96.7%–97.9%) without localized inflammatory heatmap clusters.",
+    "common_triggers_or_factors": [
+      "Consistent daily gentle skin cleansing and balanced hydration maintenance",
+      "Adequate daily protection against ultraviolet radiation using broad-spectrum sunscreen",
+      "Balanced dietary habits, sufficient hydration, and adequate sleep patterns",
+      "Minimal exposure to harsh industrial pollutants, tobacco smoke, and severe weather extremes",
+      "Avoidance of unnecessary abrasive physical scrubs or over-exfoliating chemical agents"
+    ],
+    "commonly_confused_with": [
+      {
+        "condition": "Mild Subclinical Acne",
+        "how_it_differs": "Very early or minimal microscopic microcomedones may not reach visual detection thresholds under standard ambient selfie lighting but can develop into visible lesions if pores clog."
+      },
+      {
+        "condition": "Transient Physiological Flushing",
+        "how_it_differs": "Temporary, benign facial flushing from exercise or ambient temperature resolves quickly without persistent background erythema or vascular changes typical of rosacea."
+      },
+      {
+        "condition": "Non-Inflammatory Pigmentation or Texture Changes",
+        "how_it_differs": "Conditions such as melasma, solar lentigines, or benign keratoses lie outside the model's 4-class diagnostic scope and may be classified as normal due to the absence of inflammatory lesions."
+      }
+    ],
+    "general_care_tips": [
+      "Cleanse facial skin once to twice daily using a gentle, pH-balanced cleanser to preserve natural barrier lipids",
+      "Apply a broad-spectrum daily sunscreen (SPF 30 or higher) to protect against premature photoaging and ultraviolet cellular damage",
+      "Maintain barrier integrity with a light, non-comedogenic daily moisturizer appropriate for your skin type",
+      "Stay well hydrated and maintain a balanced diet rich in essential nutrients and antioxidants",
+      "Perform regular self-examinations to notice any new, changing, or persistent skin marks over time"
+    ],
+    "see_a_doctor_if": [
+      "A mole or pigmented spot changes in size, shape, color, or displays asymmetrical, irregular borders",
+      "New, non-healing skin sores, persistent bleeding bumps, or unusual growths emerge",
+      "Sudden unexplained facial rashes, swelling, or hives appear and do not subside",
+      "Persistent itching, pain, tenderness, or unusual burning sensations develop without visible cause",
+      "Persistent concerns arise regarding skin health, unusual lesions, or family history of skin conditions"
+    ],
+    "caution_note": "Note: A 'Normal' result means no strong visual signs of the 3 target conditions (Acne, Rosacea, Dermatitis) were detected. It does NOT guarantee the absence of other skin conditions or disease.",
+    "en": {
+      "name": "Normal Skin (Healthy Control)",
+      "model_match_phrase": "The model's best match is Normal Skin (Healthy Control).",
+      "short_description": "A 'Normal' classification indicates that the deep learning model did not detect significant visual hallmarks of the three target inflammatory facial dermatoses (Acne, Rosacea, or Dermatitis). However, this result does NOT guarantee completely healthy skin or rule out conditions outside the model's 4-class training scope, such as hyperpigmentation, melasma, fungal or viral infections, benign growths, or cutaneous neoplasms.",
+      "typical_symptoms": [
+        "Balanced hydration with no extensive dry flaking or excessive sebum pooling",
+        "Even skin tone and texture across facial zones without focal inflammatory lesions",
+        "Absence of follicular comedones (blackheads or whiteheads), papules, and pustules",
+        "Absence of persistent central facial erythema (malar flushing) and visible telangiectasia",
+        "Absence of widespread eczematous scaling, surface weeping, or intense localized pruritus"
+      ],
+      "typical_facial_distribution": "Normal skin exhibits uniform, balanced texture and tone across all five anatomical regions (forehead, nose, left cheek, right cheek, and chin). In the model's 5-region Grad-CAM attribution, normal test samples demonstrated evenly distributed target probabilities (96.7%–97.9%) without localized inflammatory heatmap clusters.",
+      "common_triggers_or_factors": [
+        "Consistent daily gentle skin cleansing and balanced hydration maintenance",
+        "Adequate daily protection against ultraviolet radiation using broad-spectrum sunscreen",
+        "Balanced dietary habits, sufficient hydration, and adequate sleep patterns",
+        "Minimal exposure to harsh industrial pollutants, tobacco smoke, and severe weather extremes",
+        "Avoidance of unnecessary abrasive physical scrubs or over-exfoliating chemical agents"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "Mild Subclinical Acne",
+          "how_it_differs": "Very early or minimal microscopic microcomedones may not reach visual detection thresholds under standard ambient selfie lighting but can develop into visible lesions if pores clog."
+        },
+        {
+          "condition": "Transient Physiological Flushing",
+          "how_it_differs": "Temporary, benign facial flushing from exercise or ambient temperature resolves quickly without persistent background erythema or vascular changes typical of rosacea."
+        },
+        {
+          "condition": "Non-Inflammatory Pigmentation or Texture Changes",
+          "how_it_differs": "Conditions such as melasma, solar lentigines, or benign keratoses lie outside the model's 4-class diagnostic scope and may be classified as normal due to the absence of inflammatory lesions."
+        }
+      ],
+      "general_care_tips": [
+        "Cleanse facial skin once to twice daily using a gentle, pH-balanced cleanser to preserve natural barrier lipids",
+        "Apply a broad-spectrum daily sunscreen (SPF 30 or higher) to protect against premature photoaging and ultraviolet cellular damage",
+        "Maintain barrier integrity with a light, non-comedogenic daily moisturizer appropriate for your skin type",
+        "Stay well hydrated and maintain a balanced diet rich in essential nutrients and antioxidants",
+        "Perform regular self-examinations to notice any new, changing, or persistent skin marks over time"
+      ],
+      "see_a_doctor_if": [
+        "A mole or pigmented spot changes in size, shape, color, or displays asymmetrical, irregular borders",
+        "New, non-healing skin sores, persistent bleeding bumps, or unusual growths emerge",
+        "Sudden unexplained facial rashes, swelling, or hives appear and do not subside",
+        "Persistent itching, pain, tenderness, or unusual burning sensations develop without visible cause",
+        "Persistent concerns arise regarding skin health, unusual lesions, or family history of skin conditions"
+      ],
+      "caution_note": "Note: A 'Normal' result means no strong visual signs of the 3 target conditions (Acne, Rosacea, Dermatitis) were detected. It does NOT guarantee the absence of other skin conditions or disease."
+    },
+    "th": {
+      "name": "ผิวปกติ (Normal Skin)",
+      "model_match_phrase": "ผลลัพธ์ที่ใกล้เคียงที่สุดจากโมเดลคือ ผิวปกติ (Normal Skin)",
+      "short_description": "ผลการจำแนกประเภท 'Normal' บ่งชี้ว่าโมเดลตรวจไม่พบรอยโรคหรือลักษณะเด่นที่บ่งบอกถึงโรคผิวหนังอักเสบ 3 กลุ่มเป้าหมาย (สิว โรคโรซาเซีย หรือโรคผิวหนังอักเสบ) อย่างไรก็ตาม ผลลัพธ์นี้ไม่ได้เป็นการรับรองว่าผิวมีสุขภาพสมบูรณ์แบบ และไม่สามารถคัดกรองหรือวินิจฉัยภาวะทางผิวหนังอื่นที่อยู่นอกเหนือขอบเขตการฝึกฝน 4 กลุ่มของโมเดล (เช่น ฝ้า กระ รอยดำ การติดเชื้อรา แบคทีเรีย ไวรัส หรือเนื้องอกผิวหนัง)",
+      "typical_symptoms": [
+        "ผิวมีความชุ่มชื้นสมดุล ไม่แห้งลอกเป็นขุยและไม่มีความมันส่วนเกินผิดปกติ",
+        "สีผิวและพื้นผิวโดยรวมมีความสม่ำเสมอทั่วใบหน้า ไม่พบรอยโรคอักเสบเฉพาะจุด",
+        "ไม่พบลักษณะสิวหัวดำ สิวหัวขาว ตุ่มแดงอักเสบ หรือตุ่มหนองจากรูขุมขน",
+        "ไม่พบรอยแดงถาวรบริเวณกึ่งกลางใบหน้าหรือเส้นเลือดฝอยขยายตัวผิดปกติ",
+        "ไม่พบผื่นผิวหนังอักเสบลอกเป็นขุย อาการน้ำเหลืองซึม หรืออาการคันรุนแรง"
+      ],
+      "typical_facial_distribution": "ผิวปกติแสดงโครงสร้าง สีผิว และความชุ่มชื้นที่สม่ำเสมอตลอดทั้ง 5 บริเวณทางกายวิภาคบนใบหน้า (หน้าผาก จมูก แก้มซ้าย แก้มขวา คาง) โดยในการวิเคราะห์ Grad-CAM ของโมเดล ตัวอย่างผิวปกติแสดงระดับความน่าจะเป็นที่สม่ำเสมอในทุกบริเวณ (96.7%–97.9%) โดยไม่มีการกระจุกตัวของจุดความร้อน (Heatmap) ที่บ่งชี้การอักเสบ",
+      "common_triggers_or_factors": [
+        "การทำความสะอาดผิวหน้าและรักษาความชุ่มชื้นอย่างสม่ำเสมอด้วยวิธีที่เหมาะสม",
+        "การปกป้องผิวจากแสงแดดและรังสีอัลตราไวโอเลตด้วยครีมกันแดดเป็นประจำ",
+        "การรับประทานอาหารที่มีคุณค่าทางโภชนาการ ดื่มน้ำเพียงพอ และพักผ่อนอย่างมีคุณภาพ",
+        "การหลีกเลี่ยงมลพิษ ควันบุหรี่ และสภาพอากาศที่รุนแรงเกินไป",
+        "การหลีกเลี่ยงการขัดถูผิวหน้าอย่างรุนแรงหรือการใช้สารเคมีผลัดเซลล์ผิวมากเกินไป"
+      ],
+      "commonly_confused_with": [
+        {
+          "condition": "สิวระยะเริ่มต้นขนาดเล็ก (Subclinical Acne)",
+          "how_it_differs": "การอุดตันของรูขุมขนขนาดเล็กมากในระยะเริ่มต้นอาจยังไม่เห็นเป็นรอยโรคชัดเจนจากภาพถ่ายในแสงธรรมชาติ แต่อาจพัฒนาเป็นสิวได้หากเกิดการอุดตันเพิ่มขึ้น"
+        },
+        {
+          "condition": "อาการหน้าแดงชั่วคราว (Transient Flushing)",
+          "how_it_differs": "อาการหน้าแดงชั่วคราวจากการออกกำลังกายหรืออากาศร้อนสามารถหายได้เองตามธรรมชาติในเวลาอันสั้น แตกต่างจากโรซาเซียที่มีรอยแดงถาวรและเส้นเลือดฝอยขยาย"
+        },
+        {
+          "condition": "ความผิดปกติของเม็ดสีหรือเนื้อผิวที่ไม่ได้เกิดจากการอักเสบ",
+          "how_it_differs": "ภาวะเช่น ฝ้า กระ จุดด่างดำจากแสงแดด หรือติ่งเนื้อ เป็นภาวะที่อยู่นอกเหนือขอบเขตการจำแนก 4 กลุ่มของโมเดล และอาจถูกจัดเป็นปกติเนื่องจากไม่มีการอักเสบ"
+        }
+      ],
+      "general_care_tips": [
+        "ทำความสะอาดผิวหน้าวันละ 1 ถึง 2 ครั้งด้วยสารทำความสะอาดสูตรอ่อนโยนที่มีค่า pH สมดุล เพื่อรักษาไขมันตามธรรมชาติของเกราะป้องกันผิว",
+        "ทาครีมกันแดดที่มีค่า SPF 30 ขึ้นไปเป็นประจำทุกวัน เพื่อปกป้องผิวจากรังสี UVA และ UVB",
+        "บำรุงผิวด้วยมอยส์เจอไรเซอร์สูตรที่เหมาะกับสภาพผิว เพื่อรักษาความชุ่มชื้นและเกราะป้องกันผิวให้แข็งแรง",
+        "ดื่มน้ำสะอาดให้เพียงพอและรับประทานอาหารที่มีประโยชน์ อุดมด้วยสารต้านอนุมูลอิสระ",
+        "สังเกตความเปลี่ยนแปลงของผิวหนังและจุดด่างดำต่างๆ บนใบหน้าเป็นประจำอย่างต่อเนื่อง"
+      ],
+      "see_a_doctor_if": [
+        "ไฝ ปาน หรือจุดด่างดำมีการเปลี่ยนแปลงขนาด รูปร่าง สี หรือมีขอบเขตไม่สม่ำเสมอ",
+        "มีแผลเรื้อรังที่ไม่ยอมหาย ตุ่มก้อนใหม่ที่โตเร็ว หรือมีเลือดออกง่าย",
+        "เกิดผื่นแดง ลมพิษ หรืออาการบวมอย่างกะทันหันบนใบหน้าโดยไม่ทราบสาเหตุ",
+        "มีอาการคัน เจ็บ หรือแสบร้อนต่อเนื่องโดยไม่มีสาเหตุชัดเจน",
+        "มีความกังวลเกี่ยวกับสุขภาพผิว หรือมีประวัติบุคคลในครอบครัวเป็นโรคผิวหนังร้ายแรง"
+      ],
+      "caution_note": "ข้อสังเกต: ผลลัพธ์ 'Normal' หมายถึงโมเดลตรวจไม่พบสัญญาณที่เด่นชัดของโรคผิวหนังเป้าหมายทั้ง 3 โรค (สิว, โรคโรซาเซีย, โรคผิวหนังอักเสบ) ทั้งนี้ไม่ได้เป็นการรับรองว่าไม่มีโรคผิวหนังชนิดอื่นอยู่นอกเหนือจากนี้"
+    },
+    "sources": [
+      {
+        "title": "American Academy of Dermatology (AAD) — Skin Care Basics",
+        "url": "https://www.aad.org/public/everyday-care/skin-care-basics"
+      },
+      {
+        "title": "NHS — Healthy Skin and Sun Safety",
+        "url": "https://www.nhs.uk/live-well/seasonal-health/sunscreen-and-sun-safety/"
+      },
+      {
+        "title": "Mayo Clinic — Skin Care: 5 Tips for Healthy Skin",
+        "url": "https://www.mayoclinic.org/healthy-lifestyle/adult-health/in-depth/skin-care/art-20048237"
+      },
+      {
+        "title": "DermNet NZ — Normal Skin Structure and Function",
+        "url": "https://dermnetnz.org/topics/normal-skin"
+      }
+    ]
+  }
+}
