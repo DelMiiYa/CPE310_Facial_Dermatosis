@@ -27,7 +27,19 @@ Thumbs.db
 .env
 *.env
 
-# Summaries
+# Summaries, handoff files, and non-core markdown / presentation bundles
 *summary*
 *SUMMARY*
 *Summary*
+*handoff*
+*HANDOFF*
+*Handoff*
+*prompt*
+*PROMPT*
+agent_guidelines.md
+DEMO_SCRIPT.md
+CLIP_PRESENTATION_GUIDELINE.md
+VIDEO_PRODUCTION_SCRIPT.md
+docs/
+tasks/
+remotion_bundle/
